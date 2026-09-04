@@ -1,0 +1,1036 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>한국 음악극 인터랙티브 PPT</title>
+<link href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&family=Noto+Serif+KR:wght@300;400;600;700;900&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --gold:#C9A84C;--gold2:#F0D080;
+  --ans:#4fd8e0;--ans-bg:rgba(79,216,224,.16);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{width:100%;height:100%;overflow:hidden;}
+body{font-family:'Noto Serif KR',serif;word-break:keep-all;overflow-wrap:break-word;}
+
+#hud{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;align-items:center;justify-content:space-between;
+  padding:10px 32px;background:rgba(0,0,0,.6);backdrop-filter:blur(12px);border-bottom:1px solid rgba(201,168,76,.25);}
+.htitle{color:var(--gold2);font-family:'Nanum Myeongjo',serif;font-size:1.1rem;font-weight:800;letter-spacing:3px;text-decoration:none;}
+.hud-left{display:flex;align-items:center;gap:10px;}
+.hud-jump{font-family:'Noto Sans KR',sans-serif;font-size:.85rem;font-weight:700;color:rgba(255,255,255,.75);background:rgba(201,168,76,.12);border:1px solid rgba(201,168,76,.35);border-radius:20px;padding:5px 14px;cursor:pointer;transition:.25s;white-space:nowrap;}
+.hud-jump:hover{background:rgba(201,168,76,.3);color:#fff;}
+.hud-jump:focus-visible{outline:2px solid var(--gold2);outline-offset:2px;}
+.hud-menu{position:relative;}
+.hud-dropdown{position:absolute;top:calc(100% + 10px);left:50%;transform:translateX(-50%) translateY(-6px);display:none;grid-template-columns:repeat(3,1fr);gap:8px;width:340px;background:rgba(10,8,4,.97);border:1.5px solid rgba(201,168,76,.4);border-radius:16px;padding:12px;box-shadow:0 18px 44px rgba(0,0,0,.6);z-index:600;opacity:0;transition:opacity .18s ease,transform .18s ease;}
+.hud-dropdown::before{content:"";position:absolute;top:-7px;left:50%;transform:translateX(-50%) rotate(45deg);width:12px;height:12px;background:rgba(10,8,4,.97);border-left:1.5px solid rgba(201,168,76,.4);border-top:1.5px solid rgba(201,168,76,.4);}
+.hud-dropdown.open{display:grid;opacity:1;transform:translateX(-50%) translateY(0);}
+.hud-tile{display:flex;flex-direction:column;align-items:center;gap:5px;background:rgba(255,255,255,.05);border:1.5px solid rgba(201,168,76,.22);border-radius:12px;padding:12px 6px;cursor:pointer;transition:.2s;font-family:'Noto Sans KR',sans-serif;}
+.hud-tile:hover{background:rgba(201,168,76,.2);border-color:var(--gold);transform:translateY(-3px);}
+.hud-tile:focus-visible{outline:2px solid var(--gold2);outline-offset:2px;}
+.hud-tile-icon{font-size:1.5rem;line-height:1;}
+.hud-tile-label{font-size:.68rem;font-weight:700;color:rgba(255,255,255,.85);letter-spacing:-.01em;text-align:center;line-height:1.25;}
+.hud-tile:hover .hud-tile-label{color:#fff;}
+#dots{display:flex;gap:4px;flex-wrap:wrap;justify-content:center;max-width:52%;}
+.dot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.2);cursor:pointer;transition:.3s;}
+.dot.active{background:var(--gold);transform:scale(1.5);}
+.hnum{color:rgba(255,255,255,.5);font-size:.9rem;letter-spacing:1px;}
+
+.nav-btn{position:fixed;top:50%;transform:translateY(-50%);z-index:400;width:52px;height:52px;border-radius:50%;
+  background:rgba(0,0,0,.45);border:1.5px solid rgba(201,168,76,.35);color:rgba(255,255,255,.85);font-size:1.8rem;
+  display:flex;align-items:center;justify-content:center;cursor:pointer;transition:.3s;user-select:none;}
+.nav-btn:hover{background:rgba(201,168,76,.3);}
+#btnPrev{left:14px;}#btnNext{right:14px;}
+
+#deck{width:100%;height:100%;}
+.slide{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;
+  padding:74px 36px 36px;cursor:pointer;overflow:hidden;}
+.slide:has(.stitle){justify-content:flex-start;}
+.slide.active{display:flex;}
+.slide-fit{display:flex;flex-direction:column;align-items:center;width:100%;}
+
+.bg-title {background:linear-gradient(145deg,#1A0F04 0%,#3C2408 40%,#1A1204 100%);}
+.bg-intro {background:linear-gradient(145deg,#140c06 0%,#2a1c10 45%,#0c0804 100%);}
+.bg-story {background:linear-gradient(145deg,#0a1810 0%,#122818 45%,#060e08 100%);}
+.bg-char  {background:linear-gradient(145deg,#1e1206 0%,#3a230c 45%,#120a04 100%);}
+.bg-scene {background:linear-gradient(145deg,#001018 0%,#002030 45%,#000810 100%);}
+.bg-quote {background:linear-gradient(145deg,#1a1000 0%,#2a1800 45%,#100a00 100%);}
+.bg-think {background:linear-gradient(145deg,#0a0818 0%,#141225 45%,#060510 100%);}
+.bg-essay {background:linear-gradient(145deg,#100800 0%,#1e1000 45%,#080400 100%);}
+
+.gold-bar{width:50px;height:2.5px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:0 auto 18px;}
+.stitle{font-family:'Nanum Myeongjo',serif;font-size:clamp(2.5rem,4.6vw,3.9rem);font-weight:800;color:#fff;letter-spacing:.09em;text-align:center;margin-bottom:6px;text-shadow:0 2px 20px rgba(201,168,76,.4);}
+.ssub{font-size:clamp(.9rem,1.4vw,1.15rem);color:rgba(255,255,255,.4);letter-spacing:.15em;text-align:center;margin-bottom:14px;font-weight:300;}
+
+.bl{display:inline-block;border-bottom:2.5px solid rgba(201,168,76,.5);min-width:90px;padding:2px 12px;cursor:pointer;transition:.25s;color:transparent;border-radius:4px;font-weight:700;font-size:inherit;}
+.bl:hover{background:rgba(255,255,255,.07);}
+.bl.show{color:var(--ans)!important;background:var(--ans-bg);border-bottom-color:var(--ans);}
+.ca{display:inline-block;min-width:70px;padding:2px 10px;cursor:pointer;transition:.25s;color:transparent;border-bottom:2px solid rgba(201,168,76,.4);border-radius:4px;font-weight:700;font-size:inherit;}
+.ca.show{color:var(--ans)!important;background:var(--ans-bg);border-bottom-color:var(--ans);}
+
+.t0{display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center;}
+.t0-main{font-family:'Nanum Myeongjo',serif;font-size:clamp(3.6rem,8vw,7rem);font-weight:800;color:#fff;line-height:1.15;letter-spacing:.1em;text-shadow:0 0 60px rgba(201,168,76,.5);}
+.t0-sub{font-size:clamp(1.3rem,2.4vw,2.1rem);letter-spacing:.4em;color:var(--gold);font-weight:300;}
+.t0-info{display:flex;gap:28px;flex-wrap:wrap;justify-content:center;font-size:clamp(.9rem,1.4vw,1.1rem);color:rgba(255,255,255,.5);letter-spacing:.05em;font-weight:300;}
+.t0-info b{color:var(--gold2);}
+
+.intro-def{background:rgba(255,255,255,.06);border-left:5px solid var(--gold);border-radius:0 10px 10px 0;padding:20px 26px;font-size:clamp(1.7rem,2.6vw,2.35rem);color:rgba(255,255,255,.9);line-height:1.75;font-weight:300;width:88%;max-width:1180px;}
+.intro-def strong{color:var(--gold2);font-weight:800;}
+.intro-cards{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;width:88%;max-width:1180px;margin-top:14px;}
+.icard{border-radius:14px;padding:24px 16px;display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;}
+.ic-a{background:rgba(201,168,76,.12);border:1.5px solid rgba(201,168,76,.3);}
+.ic-b{background:rgba(78,128,102,.12);border:1.5px solid rgba(78,128,102,.3);}
+.ic-c{background:rgba(74,96,160,.12);border:1.5px solid rgba(74,96,160,.3);}
+.icard-icon{font-size:clamp(2rem,3.2vw,2.7rem);}
+.icard-name{font-size:clamp(1.4rem,2.1vw,1.9rem);font-weight:800;color:#fff;}
+.icard-desc{font-size:clamp(1.1rem,1.75vw,1.45rem);color:rgba(255,255,255,.55);font-weight:300;line-height:1.6;}
+
+.story-card{width:100%;max-width:1180px;background:rgba(255,255,255,.05);border:1.5px solid rgba(78,128,102,.3);border-radius:20px;padding:34px 44px;display:flex;flex-direction:column;gap:16px;}
+.step-badge{font-size:clamp(.9rem,1.4vw,1.1rem);letter-spacing:.22em;color:var(--gold);font-weight:700;}
+.scene-body{font-size:clamp(1.9rem,3vw,2.6rem);color:rgba(255,255,255,.82);line-height:1.65;font-weight:300;}
+.scene-body strong{color:var(--gold2);font-weight:700;}
+.opera-list{display:flex;flex-direction:column;gap:30px;width:100%;}
+.opera-row{font-size:clamp(1.9rem,3vw,2.7rem);color:rgba(255,255,255,.82);line-height:1.4;font-weight:300;white-space:nowrap;}
+.opera-term{display:inline-block;text-align:center;vertical-align:baseline;margin-right:22px;}
+
+.char-card{width:100%;max-width:1180px;background:rgba(255,255,255,.05);border:1.5px solid rgba(201,168,76,.2);border-radius:20px;padding:34px 42px;display:flex;flex-direction:column;gap:18px;}
+.char-badge{display:inline-block;font-size:clamp(.85rem,1.3vw,1.05rem);padding:7px 20px;border-radius:30px;font-weight:700;letter-spacing:.05em;align-self:flex-start;}
+.char-name-big{font-family:'Nanum Myeongjo',serif;font-size:clamp(3.1rem,6.4vw,5.6rem);font-weight:800;color:#fff;letter-spacing:.15em;line-height:1.1;}
+.char-q-wrap{background:rgba(255,255,255,.06);border-left:4px solid var(--gold);border-radius:0 12px 12px 0;padding:18px 24px;font-size:clamp(1.45rem,2.3vw,2.05rem);color:rgba(255,255,255,.85);line-height:1.8;font-weight:300;}
+.char-q-wrap strong{color:var(--gold2);font-weight:700;}
+.bogi-row{display:flex;flex-wrap:wrap;gap:7px;margin-top:2px;}
+.bchip{font-size:clamp(.9rem,1.3vw,1.15rem);color:rgba(255,255,255,.4);background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:4px 15px;}
+.char-img{width:100%;}
+.char-img img{width:180px;height:180px;object-fit:cover;border-radius:50%;border:3px solid rgba(201,168,76,.5);display:block;margin:0 auto;}
+.photo-row{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;width:100%;}
+.photo-row img{width:150px;height:150px;object-fit:cover;border-radius:14px;border:2px solid rgba(201,168,76,.4);}
+
+.cast-header{width:100%;text-align:center;margin-bottom:6px;}
+.cast-header img{max-width:280px;max-height:140px;border-radius:12px;border:2px solid rgba(201,168,76,.4);box-shadow:0 8px 24px rgba(0,0,0,.5);}
+.cast-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;width:94%;max-width:1180px;}
+.cast-item{background:rgba(255,255,255,.05);border:1.5px solid rgba(201,168,76,.25);border-radius:14px;padding:16px 10px;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;}
+.cast-visual{width:76px;height:76px;border-radius:50%;overflow:hidden;background:rgba(201,168,76,.12);display:flex;align-items:center;justify-content:center;font-size:2.3rem;flex-shrink:0;}
+.cast-visual img{width:100%;height:100%;object-fit:cover;}
+.cast-name{font-family:'Nanum Myeongjo',serif;font-weight:800;color:#fff;font-size:1.15rem;}
+.cast-role{font-size:.92rem;color:rgba(255,255,255,.55);font-weight:300;line-height:1.4;}
+
+.quote-wrap{width:100%;max-width:1180px;background:rgba(255,255,255,.05);border:1.5px solid rgba(201,168,76,.2);border-left:6px solid var(--gold);border-radius:20px;padding:36px 46px;display:flex;flex-direction:column;gap:16px;align-items:center;text-align:center;}
+.q-meaning{font-size:clamp(1.1rem,1.75vw,1.45rem);color:rgba(255,255,255,.75);line-height:1.75;border-top:1px solid rgba(255,255,255,.12);padding-top:16px;font-weight:300;width:100%;text-align:left;}
+.q-meaning b{color:var(--gold2);font-weight:700;}
+.q-quiz{font-size:clamp(.95rem,1.4vw,1.2rem);color:rgba(201,168,76,.8);font-weight:700;margin:8px 0 6px;}
+.q-tags{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;}
+.qtag{font-size:clamp(.95rem,1.4vw,1.2rem);background:rgba(255,255,255,.07);border:1.5px solid rgba(255,255,255,.2);color:rgba(255,255,255,.75);border-radius:14px;padding:6px 18px;cursor:pointer;transition:.25s;font-weight:300;}
+.qtag:hover{background:rgba(201,168,76,.15);border-color:var(--gold);}
+.qtag.qans{background:rgba(46,125,50,.2);border-color:#6bcb77;color:#a5d6a7;}
+.qtag.qwrong{background:rgba(180,50,50,.15);border-color:#e57373;color:#ef9a9a;}
+
+.comp-outer{width:92%;max-width:1180px;border-radius:14px;overflow:hidden;border:1px solid rgba(255,255,255,.12);}
+.comp-thead{display:grid;grid-template-columns:1fr 1fr 1fr;background:rgba(15,25,50,.95);}
+.comp-thead div{padding:16px 14px;text-align:center;font-size:clamp(1.4rem,2.2vw,1.9rem);font-weight:800;color:var(--gold2);font-family:'Nanum Myeongjo',serif;letter-spacing:.04em;}
+.comp-thead div:not(:last-child){border-right:1px solid rgba(255,255,255,.1);}
+.comp-row{display:grid;grid-template-columns:1fr 1fr 1fr;border-top:1px solid rgba(255,255,255,.07);}
+.comp-row div{padding:13px 14px;font-size:clamp(1.25rem,1.9vw,1.65rem);display:flex;align-items:center;justify-content:center;text-align:center;}
+.comp-row div:not(:last-child){border-right:1px solid rgba(255,255,255,.07);}
+.ck{color:rgba(255,255,255,.55);font-size:clamp(1.1rem,1.7vw,1.45rem)!important;font-weight:700;background:rgba(255,255,255,.04);}
+.cv1{background:rgba(201,168,76,.07);}
+.cv2{background:rgba(78,128,102,.07);}
+.cv3{background:rgba(74,96,160,.07);}
+.cv4{background:rgba(150,80,150,.07);}
+
+.video-wrap-dream{width:100%;max-width:820px;aspect-ratio:16/9;border-radius:20px;overflow:hidden;
+  border:1.5px solid rgba(201,168,76,.4);box-shadow:0 0 60px rgba(201,168,76,.3),0 10px 50px rgba(0,0,0,.5);background:#000;}
+.video-wrap-dream iframe{width:100%;height:100%;border:0;display:block;}
+.video-wrap-dream.small{max-width:520px;}
+
+.video-link{display:block;position:relative;width:100%;max-width:820px;aspect-ratio:16/9;border-radius:20px;overflow:hidden;
+  border:1.5px solid rgba(201,168,76,.4);box-shadow:0 0 60px rgba(201,168,76,.3),0 10px 50px rgba(0,0,0,.5);
+  text-decoration:none;background:#000;transition:transform .3s ease,box-shadow .3s ease;}
+.video-link:hover{transform:scale(1.015);box-shadow:0 0 80px rgba(201,168,76,.45),0 14px 60px rgba(0,0,0,.6);}
+.video-link img{width:100%;height:100%;object-fit:cover;display:block;opacity:.82;transition:opacity .3s ease;}
+.video-link:hover img{opacity:1;}
+.video-link .vl-play{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  width:84px;height:84px;border-radius:50%;background:rgba(0,0,0,.5);border:2.5px solid rgba(255,255,255,.92);
+  display:flex;align-items:center;justify-content:center;font-size:2rem;color:#fff;backdrop-filter:blur(2px);
+  transition:transform .3s ease,background .3s ease;}
+.video-link:hover .vl-play{transform:translate(-50%,-50%) scale(1.1);background:rgba(201,52,52,.85);border-color:#fff;}
+.video-link .vl-badge{position:absolute;bottom:14px;right:14px;background:rgba(0,0,0,.78);color:#fff;font-size:.85rem;
+  padding:5px 13px;border-radius:20px;display:flex;align-items:center;gap:6px;font-weight:700;letter-spacing:.02em;}
+.video-link.small{max-width:520px;}
+.video-caption{margin-top:16px;font-size:clamp(1.05rem,1.6vw,1.35rem);color:rgba(255,255,255,.78);font-weight:300;
+  display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:center;text-align:center;}
+.vcap-dur{font-size:.85rem;background:rgba(201,168,76,.18);color:var(--gold2);border:1px solid rgba(201,168,76,.4);
+  border-radius:14px;padding:3px 13px;font-weight:700;letter-spacing:.04em;}
+.video-desc{font-size:clamp(1.1rem,1.7vw,1.4rem);color:rgba(255,255,255,.72);font-weight:300;line-height:1.7;max-width:760px;text-align:center;margin-top:8px;}
+
+.video-side-row{display:flex;align-items:center;gap:40px;width:100%;max-width:1650px;}
+.video-side-row .video-link{flex:1 1 560px;max-width:640px;margin:0;}
+.video-side-text{flex:1 1 480px;display:flex;flex-direction:column;gap:16px;text-align:left;}
+.video-side-text .video-caption{justify-content:flex-start;text-align:left;font-size:clamp(1.2rem,1.9vw,1.6rem);}
+.video-side-text .video-desc{max-width:none;text-align:left;margin-top:0;font-size:clamp(1.35rem,2.1vw,1.85rem);line-height:1.75;}
+.vd-hi{color:var(--gold2);font-weight:700;}
+
+.particle{position:fixed;pointer-events:none;z-index:9999;font-size:1rem;animation:pfly 1.1s ease-out forwards;}
+@keyframes pfly{0%{opacity:1;transform:translateY(0)scale(1);}100%{opacity:0;transform:translateY(-90px)scale(.1);}}
+
+.kw{display:inline-block;min-width:70px;padding:1px 10px;border-bottom:2.5px solid rgba(240,208,128,.6);
+  cursor:pointer;color:transparent;font-weight:800;transition:.25s;border-radius:4px;font-size:inherit;}
+.kw:hover{background:rgba(255,255,255,.07);}
+.kw.show{color:var(--gold2)!important;background:rgba(240,208,128,.12);border-bottom-color:var(--gold2);}
+.bl:focus-visible,.ca:focus-visible,.kw:focus-visible{outline:2px solid var(--gold2);outline-offset:2px;}
+.journey-wrap{position:relative;width:100%;max-width:none;margin:6px auto 0;aspect-ratio:1400/540;}
+.journey-path{position:absolute;inset:0;width:100%;height:100%;}
+.journey-node{position:absolute;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:8px;width:20%;opacity:0;pointer-events:none;transition:opacity .5s ease;}
+.journey-node.jn-shown{opacity:1;pointer-events:auto;}
+.jn-icon{position:relative;width:132px;height:132px;border-radius:50%;overflow:hidden;background:rgba(255,255,255,.08);box-shadow:0 8px 24px rgba(0,0,0,.5);margin:0 auto;}
+.jn-icon img{width:100%;height:100%;object-fit:cover;display:block;}
+.jn-gold{border:4px solid var(--gold);}
+.jn-indigo{border:4px solid #6a5fb8;}
+.jn-turn{width:158px;height:158px;border:5px solid var(--gold);box-shadow:0 0 0 5px rgba(106,95,184,.55),0 8px 24px rgba(0,0,0,.5);}
+.jn-num{position:absolute;top:-6px;left:-6px;width:38px;height:38px;border-radius:50%;background:var(--gold);color:#1a1000;font-family:'Nanum Myeongjo',serif;font-weight:800;font-size:1.2rem;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,.45);z-index:2;}
+.jn-turn-tag{font-family:'Noto Sans KR',sans-serif;font-size:1rem;font-weight:700;letter-spacing:.1em;color:#1a1000;background:linear-gradient(90deg,var(--gold),#F0D080);padding:4px 14px;border-radius:10px;margin-bottom:2px;}
+.jn-name{font-family:'Nanum Myeongjo',serif;font-weight:800;color:#fff;font-size:1.55rem;letter-spacing:.03em;text-shadow:0 2px 8px rgba(0,0,0,.6);background:rgba(201,168,76,.22);border:1px solid rgba(201,168,76,.5);border-radius:10px;padding:2px 14px;}
+.jn-cap{font-family:'Noto Serif KR',serif;font-weight:500;font-size:clamp(1.3rem,1.9vw,1.6rem);color:rgba(255,255,255,.95);text-align:center;line-height:1.4;background:rgba(0,0,0,.4);border:1px solid rgba(201,168,76,.3);border-radius:12px;padding:10px 14px;}
+.jn-cap b{color:var(--gold2);font-weight:700;}
+@media (max-width:900px){.journey-wrap{aspect-ratio:auto;height:auto;}.journey-node{position:static;transform:none;width:auto;margin-bottom:14px;opacity:1;pointer-events:auto;}.journey-path{display:none;}}
+
+.rel-wrap{position:relative;width:100%;max-width:none;aspect-ratio:1400/560;margin:40px auto 0;}
+.rel-path{position:absolute;inset:0;width:100%;height:100%;overflow:visible;}
+.rel-edge{opacity:0;transition:opacity .5s ease;}
+.rel-edge.rel-shown{opacity:1;}
+.rel-label{position:absolute;transform:translate(-50%,-50%);font-family:'Noto Sans KR',sans-serif;font-size:1.9rem;font-weight:800;padding:6px 18px;border-radius:12px;background:rgba(20,16,8,.92);border:2px solid currentColor;white-space:nowrap;opacity:0;transition:opacity .5s ease;z-index:4;}
+.rel-label.rel-shown{opacity:1;}
+.rel-node{position:absolute;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:12px;width:17%;opacity:0;pointer-events:none;transition:opacity .5s ease;z-index:3;}
+.rel-node.rel-shown{opacity:1;pointer-events:auto;}
+.rel-icon{width:170px;height:170px;border-radius:50%;overflow:hidden;border:5px solid var(--gold);box-shadow:0 8px 24px rgba(0,0,0,.5);margin:0 auto;background:rgba(255,255,255,.08);}
+.rel-icon img{width:100%;height:100%;object-fit:cover;display:block;}
+.rel-name{font-family:'Nanum Myeongjo',serif;font-weight:800;color:#fff;font-size:2.1rem;letter-spacing:.04em;text-shadow:0 2px 10px rgba(0,0,0,.6);}
+@media (max-width:900px){.rel-wrap{aspect-ratio:auto;height:auto;}.rel-node{position:static;transform:none;width:auto;margin-bottom:14px;opacity:1;pointer-events:auto;}.rel-path,.rel-label{display:none;}}
+</style>
+</head>
+<body>
+
+<div id="hud">
+  <div class="hud-left">
+    <a class="htitle" href="index.html">🎭 PPT2 · 한국 음악극</a>
+    <button type="button" class="hud-jump" onclick="goSlide(1)">🎯 학습목표</button>
+    <button type="button" class="hud-jump" onclick="goSlide(2)">🎶 음악극이란?</button>
+    <div class="hud-menu">
+      <button type="button" class="hud-jump" onclick="toggleHudMenu(event,'pansori-menu')">🥁 판소리 ▾</button>
+      <div class="hud-dropdown" id="pansori-menu">
+        <button type="button" class="hud-tile" onclick="goSlide(3)"><span class="hud-tile-icon">🎬</span><span class="hud-tile-label">감상 영상</span></button>
+        <button type="button" class="hud-tile" onclick="goSlide(4)"><span class="hud-tile-icon">🎬</span><span class="hud-tile-label">유래 영상</span></button>
+        <button type="button" class="hud-tile" onclick="goSlide(5)"><span class="hud-tile-icon">🎬</span><span class="hud-tile-label">전통과 오늘</span></button>
+        <button type="button" class="hud-tile" onclick="goSlide(6)"><span class="hud-tile-icon">❓</span><span class="hud-tile-label">판소리란?</span></button>
+        <button type="button" class="hud-tile" onclick="goSlide(7)"><span class="hud-tile-icon">⭐</span><span class="hud-tile-label">특징</span></button>
+        <button type="button" class="hud-tile" onclick="goSlide(8)"><span class="hud-tile-icon">🏛️</span><span class="hud-tile-label">유명한 판소리</span></button>
+        <button type="button" class="hud-tile" onclick="goSlide(9)"><span class="hud-tile-icon">🎤</span><span class="hud-tile-label">이자람</span></button>
+        <button type="button" class="hud-tile" onclick="goSlide(10)"><span class="hud-tile-icon">🎤</span><span class="hud-tile-label">김준수</span></button>
+        <button type="button" class="hud-tile" onclick="goSlide(11)"><span class="hud-tile-icon">📖</span><span class="hud-tile-label">줄거리</span></button>
+        <button type="button" class="hud-tile" onclick="goSlide(12)"><span class="hud-tile-icon">🗺️</span><span class="hud-tile-label">이야기 지도</span></button>
+        <button type="button" class="hud-tile" onclick="goSlide(13)"><span class="hud-tile-icon">🕸️</span><span class="hud-tile-label">인물 구성도</span></button>
+        <button type="button" class="hud-tile" onclick="goSlide(14)"><span class="hud-tile-icon">💎</span><span class="hud-tile-label">감상 포인트</span></button>
+      </div>
+    </div>
+    <div class="hud-menu">
+      <button type="button" class="hud-jump" onclick="toggleHudMenu(event,'changgeuk-menu')">🎭 창극 ▾</button>
+      <div class="hud-dropdown" id="changgeuk-menu">
+        <button type="button" class="hud-tile" onclick="goSlide(15)"><span class="hud-tile-icon">🎬</span><span class="hud-tile-label">감상 영상</span></button>
+        <button type="button" class="hud-tile" onclick="goSlide(16)"><span class="hud-tile-icon">❓</span><span class="hud-tile-label">창극이란?</span></button>
+        <button type="button" class="hud-tile" onclick="goSlide(17)"><span class="hud-tile-icon">⭐</span><span class="hud-tile-label">특징</span></button>
+        <button type="button" class="hud-tile" onclick="goSlide(18)"><span class="hud-tile-icon">🏛️</span><span class="hud-tile-label">유명한 창극</span></button>
+        <button type="button" class="hud-tile" onclick="goSlide(19)"><span class="hud-tile-icon">🎼</span><span class="hud-tile-label">작곡가·연출가</span></button>
+        <button type="button" class="hud-tile" onclick="goSlide(20)"><span class="hud-tile-icon">📖</span><span class="hud-tile-label">줄거리</span></button>
+        <button type="button" class="hud-tile" onclick="goSlide(21)"><span class="hud-tile-icon">🕸️</span><span class="hud-tile-label">인물 구성도</span></button>
+        <button type="button" class="hud-tile" onclick="goSlide(22)"><span class="hud-tile-icon">💎</span><span class="hud-tile-label">감상 포인트</span></button>
+      </div>
+    </div>
+    <button type="button" class="hud-jump" onclick="goSlide(23)">⚖️ 비교</button>
+    <button type="button" class="hud-jump" onclick="goSlide(24)">🖼️ 무대 비교</button>
+    <button type="button" class="hud-jump" onclick="goSlide(25)">🌍 4개 비교</button>
+    <button type="button" class="hud-jump" onclick="goSlide(26)">📝 퀴즈</button>
+  </div>
+  <div id="dots"></div>
+  <span class="hnum" id="hnum">1 / 27</span>
+</div>
+<button class="nav-btn" id="btnPrev" onclick="move(-1)">&#8592;</button>
+<button class="nav-btn" id="btnNext" onclick="move(1)">&#8594;</button>
+
+<div id="deck">
+
+<!-- S0 표지 -->
+<div class="slide bg-title active" id="s0">
+  <div class="t0">
+    <div style="font-size:clamp(3.2rem,6vw,5.2rem);">🥁🎭</div>
+    <div class="t0-main">한국 음악극</div>
+    <div class="t0-sub">PANSORI &amp; CHANGGEUK</div>
+    <div class="gold-bar" style="margin:4px auto 10px;"></div>
+    <div style="font-size:clamp(1.1rem,1.7vw,1.4rem);color:rgba(255,255,255,.55);letter-spacing:.15em;font-weight:300;">
+      판소리와 창극으로 만나는 우리의 소리
+    </div>
+    <div class="t0-info">
+      <span>판소리 <b>조선 후기~</b></span>
+      <span>창극 <b>1900년대~</b></span>
+      <span>대표작 <b>춘향가 · 춘향전</b></span>
+    </div>
+  </div>
+</div>
+
+
+<!-- S1 학습목표 -->
+<div class="slide bg-intro" id="s1">
+  <div class="stitle">학습목표</div><div class="gold-bar"></div>
+  <div class="story-card" style="width:96%;max-width:none;padding:30px 34px;">
+    <div class="step-badge">LEARNING GOALS</div>
+    <div class="scene-body">
+      ① <span class="kw" tabindex="0" onclick="tog(this,event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.onclick(event);}">음악극</span>과 <span class="kw" tabindex="0" onclick="tog(this,event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.onclick(event);}">판소리</span>·<span class="kw" tabindex="0" onclick="tog(this,event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.onclick(event);}">창극</span>의 정의와 특징을 설명할 수 있다.<br/>
+      ② 판소리 「<span class="kw" tabindex="0" onclick="tog(this,event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.onclick(event);}">춘향가</span>」와 창극 「<span class="kw" tabindex="0" onclick="tog(this,event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.onclick(event);}">춘향전</span>」의 줄거리와 인물 관계를 이해한다.<br/>
+      ③ 판소리와 창극의 공통점과 차이점을 비교할 수 있다.
+    </div>
+  </div>
+</div>
+
+<!-- S2 음악극이란? -->
+<div class="slide bg-intro" id="s2">
+  <div class="stitle">음악극이란?</div><div class="gold-bar"></div>
+  <div class="intro-def">
+    <span class="kw" tabindex="0" onclick="tog(this,event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.onclick(event);}">음악극</span>이란 노래·연기·춤을 통해 무대 위에서 이야기를 전달하는 종합예술이다.
+    한국에는 <span class="bl" tabindex="0" onclick="tog(this,event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.onclick(event);}">판소리·창극</span>이,
+    서양에는 오페라·뮤지컬이 대표적인 음악극으로 자리잡고 있다.
+  </div>
+  <div class="intro-cards">
+    <div class="icard ic-a"><div class="icard-icon">🥁</div><div class="icard-name"><span class="kw" tabindex="0" onclick="tog(this,event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.onclick(event);}">판소리</span></div><div class="icard-desc">한국 · 1인극 · 조선 후기~</div></div>
+    <div class="icard ic-b"><div class="icard-icon">🎭</div><div class="icard-name"><span class="kw" tabindex="0" onclick="tog(this,event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.onclick(event);}">창극</span></div><div class="icard-desc">한국 · 무대극 · 1900년대~</div></div>
+    <div class="icard ic-c"><div class="icard-icon">🎼🎤</div><div class="icard-name" style="color:#90b0e0;">서양 음악극</div><div class="icard-desc"><span class="kw" tabindex="0" onclick="tog(this,event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.onclick(event);}">오페라</span> · <span class="kw" tabindex="0" onclick="tog(this,event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.onclick(event);}">뮤지컬</span></div></div>
+  </div>
+</div>
+
+<!-- S2 판소리 감상 -->
+<div class="slide bg-intro" id="s3">
+  <div class="step-badge" style="margin-bottom:4px;">▶ PREVIEW</div>
+  <div class="stitle">판소리 감상 — 「춘향가」</div>
+  <div class="ssub">영상을 감상한 뒤, 판소리에 대해 함께 알아봅시다</div>
+  <div class="gold-bar"></div>
+  <a class="video-link" href="https://www.youtube.com/watch?v=zhSJgHMI7AA" target="_blank" rel="noopener noreferrer">
+      <img src="https://img.youtube.com/vi/zhSJgHMI7AA/hqdefault.jpg" alt="판소리 춘향가 사랑가 공연 실황" loading="lazy">
+      <div class="vl-play">▶</div>
+      <div class="vl-badge">▶ YouTube에서 보기</div>
+    </a>
+  <div class="video-caption">🎬 [국악무대] 판소리 「춘향가」 中 '사랑가' — 김수인</div>
+  <div class="video-desc">이몽룡과 성춘향이 서로에 대한 사랑을 노래하는 「춘향가」의 대표 대목 '사랑가' 실제 공연 영상입니다. 소리꾼의 창(노래)과 몸짓, 고수의 장단을 직접 느껴봅시다.</div>
+</div>
+
+<!-- S3 판소리는 어디서 왔을까? -->
+<div class="slide bg-intro" id="s4">
+  <div class="step-badge" style="margin-bottom:4px;">▶ PREVIEW · 약 10분</div>
+  <div class="stitle">판소리는 어디서 왔을까?</div>
+  <div class="ssub">판소리의 유래와 형식을 영상으로 먼저 살펴봅시다</div>
+  <div class="gold-bar"></div>
+  <a class="video-link" href="https://www.youtube.com/watch?v=vDXlg8RcV-I" target="_blank" rel="noopener noreferrer">
+      <img src="https://img.youtube.com/vi/vDXlg8RcV-I/hqdefault.jpg" alt="판소리 10분 요약 강의" loading="lazy">
+      <div class="vl-play">▶</div>
+      <div class="vl-badge">▶ YouTube에서 보기</div>
+    </a>
+  <div class="video-caption">🎬 「10분국악 #4」 판소리 1강 — 판소리는 어디서 왔을까? <span class="vcap-dur">약 10분</span></div>
+  <div class="video-desc">판소리가 어떻게 생겨나 지금의 모습으로 전해졌는지, 소리꾼과 고수가 어떻게 하나의 무대를 만들어내는지 쉽게 설명해주는 강의 영상입니다.</div>
+</div>
+
+<!-- S4 전통과 오늘의 만남 -->
+<div class="slide bg-intro" id="s5">
+  <div class="step-badge" style="margin-bottom:4px;">▶ PREVIEW</div>
+  <div class="stitle">전통과 오늘의 만남 — 「어사출두」</div>
+  <div class="ssub">판소리가 요즘 음악과 만나면 어떤 모습이 될까요?</div>
+  <div class="gold-bar"></div>
+  <div class="video-side-row">
+    <a class="video-link" href="https://www.youtube.com/watch?v=X-P2w-ukYOI" target="_blank" rel="noopener noreferrer">
+        <img src="https://img.youtube.com/vi/X-P2w-ukYOI/hqdefault.jpg" alt="김준수 어사출두 크로스오버 공연" loading="lazy">
+        <div class="vl-play">▶</div>
+        <div class="vl-badge">▶ YouTube에서 보기</div>
+      </a>
+    <div class="video-side-text">
+      <div class="video-caption">🎬 소리꾼 <span class="vd-hi">김준수</span> · 「어사출두」 — JTBC 「풍류대장」</div>
+      <div class="video-desc">소리꾼 김준수가 「춘향가」의 한 대목 '어사출두'를 크로스오버 밴드 '두번째달'과 함께 부른 무대입니다.<br/><br/>
+        이렇게 전통 음악에 다른 장르를 섞어 새롭게 만든 음악을 <span class="bl" tabindex="0" onclick="tog(this,event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.onclick(event);}">퓨전</span> 음악이라 하고,<br/>
+        국악과 대중음악처럼 서로 다른 장르가 경계를 넘나들며 함께 어우러지는 것을 특히 <span class="bl" tabindex="0" onclick="tog(this,event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.onclick(event);}">크로스오버</span> 음악이라고 부릅니다.</div>
+    </div>
+  </div>
+</div>
+
+<!-- S5 판소리란? -->
+<div class="slide bg-intro" id="s6">
+  <div class="stitle">판소리란?</div>
+  <div class="gold-bar"></div>
+  <div class="intro-def">
+    <span class="kw" tabindex="0" onclick="tog(this,event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.onclick(event);}">판소리</span>는 한 명의 <span class="bl" tabindex="0" onclick="tog(this,event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.onclick(event);}">소리꾼</span>이
+    고수(북 치는 사람)의 장단에 맞춰 이야기를 소리(창)·아니리·발림으로
+    풀어내는 <strong>한국 전통 음악극</strong>이다.
+  </div>
+  <div class="intro-cards">
+    <div class="icard ic-a"><div class="icard-icon">🎶</div><div class="icard-name" style="color:#F0D080;"><span class="bl" tabindex="0" onclick="tog(this,event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.onclick(event);}">창</span></div><div class="icard-desc">가락을 붙여 노래하는 부분</div></div>
+    <div class="icard ic-b"><div class="icard-icon">🗣</div><div class="icard-name" style="color:#a5d6a7;"><span class="bl" tabindex="0" onclick="tog(this,event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.onclick(event);}">아니리</span></div><div class="icard-desc">노래가 아닌 말로 이야기를 전달하는 부분</div></div>
+    <div class="icard ic-c"><div class="icard-icon">🙆</div><div class="icard-name" style="color:#90b0e0;"><span class="bl" tabindex="0" onclick="tog(this,event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.onclick(event);}">발림</span></div><div class="icard-desc">소리꾼의 몸짓과 표정 연기</div></div>
+  </div>
+</div>
+
+<!-- S4 판소리의 특징 -->
+<div class="slide bg-intro" id="s7">
+  <div class="stitle">판소리의 특징</div><div class="gold-bar"></div>
+  <div class="intro-cards" style="margin-top:0;">
+    <div class="icard ic-a"><div class="icard-icon">🙌</div><div class="icard-name"><span class="bl" tabindex="0" onclick="tog(this,event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.onclick(event);}">추임새</span></div><div class="icard-desc">고수와 관객이 "얼씨구", "좋다"로 흥을 돋움</div></div>
+    <div class="icard ic-b"><div class="icard-icon">🎵</div><div class="icard-name"><span class="bl" tabindex="0" onclick="tog(this,event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.onclick(event);}">장단</span></div><div class="icard-desc">진양조·중모리·자진모리 등 다양한 빠르기</div></div>
+    <div class="icard ic-c"><div class="icard-icon">🥁</div><div class="icard-name"><span class="bl" tabindex="0" onclick="tog(this,event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.onclick(event);}">소리북</span></div><div class="icard-desc">고수가 치는, 판소리 유일의 악기</div></div>
+    <div class="icard ic-a"><div class="icard-icon">🎭</div><div class="icard-name"><span class="bl" tabindex="0" onclick="tog(this,event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.onclick(event);}">즉흥성</span></div><div class="icard-desc">같은 대목도 소리꾼과 그날 분위기에 따라 다르게 불림</div></div>
+    <div class="icard ic-b"><div class="icard-icon">〰️</div><div class="icard-name"><span class="bl" tabindex="0" onclick="tog(this,event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.onclick(event);}">시김새</span></div><div class="icard-desc">떨고 꺾고 흔드는, 판소리 특유의 소리 꾸밈 기교</div></div>
+    <div class="icard ic-c"><div class="icard-icon">🤝</div><div class="icard-name"><span class="bl" tabindex="0" onclick="tog(this,event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.onclick(event);}">일고수 이명창</span></div><div class="icard-desc">"첫째는 고수, 둘째는 명창" — 고수의 역할이 그만큼 중요함</div></div>
+  </div>
+  <div style="display:flex;gap:32px;width:92%;max-width:1500px;margin-top:14px;justify-content:center;">
+    <div style="flex:1 1 0;max-width:600px;text-align:center;">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/World_Pansori_Festival_%2820231107%2C_Jung-gu%2C_Seoul%29_01.jpg/960px-World_Pansori_Festival_%2820231107%2C_Jung-gu%2C_Seoul%29_01.jpg" alt="부채를 들고 창을 하는 소리꾼" loading="lazy" style="width:100%;height:175px;object-fit:cover;object-position:center 30%;border-radius:16px;border:1.5px solid rgba(201,168,76,.4);box-shadow:0 10px 40px rgba(0,0,0,.5);">
+      <div style="margin-top:8px;font-size:clamp(1.1rem,1.6vw,1.35rem);color:#F0D080;font-weight:700;">🪭 부채</div>
+      <div style="margin-top:2px;font-size:clamp(.95rem,1.3vw,1.1rem);color:rgba(255,255,255,.72);font-weight:300;">소리꾼은 반드시 부채를 들고 창을 한다</div>
+    </div>
+    <div style="flex:1 1 0;max-width:600px;text-align:center;">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/3/3b/Korean_musician-Pansori_gosu-01.jpg" alt="소리북을 치는 고수" loading="lazy" style="width:100%;height:175px;object-fit:cover;border-radius:16px;border:1.5px solid rgba(201,168,76,.4);box-shadow:0 10px 40px rgba(0,0,0,.5);">
+      <div style="margin-top:8px;font-size:clamp(1.1rem,1.6vw,1.35rem);color:#F0D080;font-weight:700;">🥁 소리북</div>
+      <div style="margin-top:2px;font-size:clamp(.95rem,1.3vw,1.1rem);color:rgba(255,255,255,.72);font-weight:300;">고수는 반드시 소리북으로 장단을 맞춘다</div>
+    </div>
+  </div>
+</div>
+
+<!-- S5 유명한 판소리와 내용요약 -->
+<div class="slide bg-story" id="s8">
+  <div class="stitle">유명한 판소리와 내용 요약</div><div class="gold-bar"></div>
+  <div class="story-card" style="width:96%;max-width:none;padding:30px 34px;">
+    <div class="step-badge">판소리 다섯마당</div>
+    <div class="opera-list">
+      <div class="opera-row"><span class="opera-term" style="width:160px;"><span class="kw" tabindex="0" onclick="tog(this,event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.onclick(event);}">춘향가</span></span><span>— 성춘향과 이몽룡의 <b style="color:#F0D080;">사랑</b> 이야기</span></div>
+      <div class="opera-row"><span class="opera-term" style="width:160px;"><span class="kw" tabindex="0" onclick="tog(this,event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.onclick(event);}">심청가</span></span><span>— <b style="color:#F0D080;">효녀 심청</b>의 이야기</span></div>
+      <div class="opera-row"><span class="opera-term" style="width:160px;"><span class="kw" tabindex="0" onclick="tog(this,event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.onclick(event);}">흥보가</span></span><span>— 흥보와 놀보의 <b style="color:#F0D080;">박타령</b></span></div>
+      <div class="opera-row"><span class="opera-term" style="width:160px;"><span class="kw" tabindex="0" onclick="tog(this,event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.onclick(event);}">수궁가</span></span><span>— 토끼와 용왕의 <b style="color:#F0D080;">지혜 겨루기</b></span></div>
+      <div class="opera-row"><span class="opera-term" style="width:160px;"><span class="kw" tabindex="0" onclick="tog(this,event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.onclick(event);}">적벽가</span></span><span>— <b style="color:#F0D080;">삼국지 적벽대전</b> 이야기</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- S6 이자람 -->
+<div class="slide bg-char" id="s9">
+  <div class="stitle">오늘의 소리꾼 — 이자람</div><div class="gold-bar"></div>
+  <div class="char-card" style="width:99%;max-width:none;padding:24px 28px;gap:12px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;width:100%;">
+      <div class="char-badge" style="background:rgba(201,168,76,.18);color:#F0D080;border:1.5px solid rgba(201,168,76,.35);">판소리 명창 · 작창가</div>
+      <a class="video-link" href="https://www.youtube.com/watch?v=UMSHvMw8kpQ" target="_blank" rel="noopener noreferrer" style="flex:0 0 170px;max-width:170px;margin:0;">
+        <img src="https://img.youtube.com/vi/UMSHvMw8kpQ/hqdefault.jpg" alt="이자람 판소리 공연 무대 영상" loading="lazy">
+        <div class="vl-play" style="width:40px;height:40px;font-size:1rem;">▶</div>
+        <div class="vl-badge" style="font-size:.6rem;padding:2px 7px;">▶ 보기</div>
+      </a>
+    </div>
+    <div class="char-name-big" style="text-align:center;">이자람</div>
+    <div style="display:flex;align-items:stretch;justify-content:center;gap:22px;flex-wrap:wrap;width:100%;">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/%EC%9D%B4%EC%9E%90%EB%9E%8C.jpg/500px-%EC%9D%B4%EC%9E%90%EB%9E%8C.jpg" alt="소리꾼 이자람" style="width:auto;height:440px;max-width:340px;object-fit:cover;border-radius:16px;border:3px solid rgba(201,168,76,.5);flex-shrink:0;">
+      <div class="char-q-wrap" style="flex:1 1 420px;font-size:clamp(1.7rem,2.3vw,2.15rem);line-height:1.45;">
+        다섯 살에 동요 '내 이름'을 불러 인기를 얻은 아역가수였던 이자람은, 이후 본격적으로 판소리에 입문해
+        <span class="bl" tabindex="0" onclick="tog(this,event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.onclick(event);}">1999년</span>
+        <span class="bl" tabindex="0" onclick="tog(this,event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.onclick(event);}">20세</span>
+        의 나이로 8시간에 걸친 「춘향가」를 최연소·최장시간으로 완창해 기네스북에 올랐다.<br/>
+        전통을 그대로 재현하는 데 그치지 않고, 브레히트의 희곡을 각색한 「사천가」·「억척가」처럼 새로운 이야기를 판소리로 짓는
+        <span class="bl" tabindex="0" onclick="tog(this,event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.onclick(event);}">작창가</span>
+        로도 활동하며, 밴드
+        <span class="bl" tabindex="0" onclick="tog(this,event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.onclick(event);}">아마도 이자람 밴드</span>
+        의 보컬 겸 기타리스트로 전통과 대중음악의 경계를 넘나들고 있다.
+      </div>
+      <div class="intro-cards" style="flex:0 0 280px;max-width:280px;width:auto;margin-top:0;grid-template-columns:1fr;gap:12px;">
+        <div class="icard ic-a" style="padding:18px 14px;gap:8px;"><div class="icard-icon" style="font-size:2.1rem;">🏆</div><div class="icard-name" style="font-size:1.3rem;"><span class="bl" tabindex="0" onclick="tog(this,event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.onclick(event);}">최연소 완창</span></div><div class="icard-desc" style="font-size:1.05rem;">20세, 8시간 「춘향가」 완창 기록</div></div>
+        <div class="icard ic-b" style="padding:18px 14px;gap:8px;"><div class="icard-icon" style="font-size:2.1rem;">✍️</div><div class="icard-name" style="font-size:1.3rem;"><span class="bl" tabindex="0" onclick="tog(this,event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.onclick(event);}">작창가</span></div><div class="icard-desc" style="font-size:1.05rem;">「사천가」·「억척가」 등 창작 판소리</div></div>
+        <div class="icard ic-c" style="padding:18px 14px;gap:8px;"><div class="icard-icon" style="font-size:2.1rem;">🎸</div><div class="icard-name" style="font-size:1.3rem;"><span class="bl" tabindex="0" onclick="tog(this,event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.onclick(event);}">밴드 활동</span></div><div class="icard-desc" style="font-size:1.05rem;">아마도 이자람 밴드 보컬 겸 기타</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S7 김준수 -->
+<div class="slide bg-char" id="s10">
+  <div class="stitle">오늘의 소리꾼 — 김준수</div><div class="gold-bar"></div>
+  <div class="char-card" style="width:99%;max-width:none;padding:24px 28px;gap:12px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;width:100%;">
+      <div class="char-badge" style="background:rgba(74,96,160,.18);color:#90b0e0;border:1.5px solid rgba(74,96,160,.35);">판소리 소리꾼 · 국립창극단원</div>
+      <a class="video-link" href="https://www.youtube.com/watch?v=vYxsjOz_oJQ" target="_blank" rel="noopener noreferrer" style="flex:0 0 170px;max-width:170px;margin:0;">
+        <img src="https://img.youtube.com/vi/vYxsjOz_oJQ/hqdefault.jpg" alt="김준수 판소리 공연 무대 영상" loading="lazy">
+        <div class="vl-play" style="width:40px;height:40px;font-size:1rem;">▶</div>
+        <div class="vl-badge" style="font-size:.6rem;padding:2px 7px;">▶ 보기</div>
+      </a>
+    </div>
+    <div class="char-name-big" style="text-align:center;">김준수</div>
+    <div style="display:flex;gap:22px;align-items:stretch;justify-content:center;flex-wrap:wrap;width:100%;">
+      <img src="https://image.yes24.com/themusical/fileStorage/ThemusicalAdmin/Player/Image/2022102434344788c4ea0ace68fab4aebc401a6924757236.jpg" alt="소리꾼 김준수" style="width:auto;height:440px;max-width:320px;object-fit:cover;border-radius:16px;border:3px solid rgba(74,96,160,.5);flex-shrink:0;">
+      <div class="char-q-wrap" style="flex:1 1 380px;font-size:clamp(1.7rem,2.3vw,2.15rem);line-height:1.45;">
+        전라남도 강진에서 태어난 김준수는 화장실조차 없는 단칸방에서 지낼 만큼
+        <span class="bl" tabindex="0" onclick="tog(this,event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.onclick(event);}">어려운 가정 형편</span>
+        속에서 자랐다. 초등학생 때 우연히 접한 판소리에 마음을 빼앗겨 소리꾼의 길을 걷기 시작했지만,
+        레슨비를 감당하기 어려워 예술고등학교를
+        <span class="bl" tabindex="0" onclick="tog(this,event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.onclick(event);}">자퇴</span>
+        까지 고민하던 시절도 있었다.<br/>
+        힘든 시간을 딛고 중앙대 전통예술학부를 졸업한 뒤
+        <span class="bl" tabindex="0" onclick="tog(this,event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.onclick(event);}">2013년</span>
+        국립창극단에 입단했고, 방송 「너의 목소리가 보여」에서 '어사출두'를 불러 큰 화제를 모으며
+        <span class="bl" tabindex="0" onclick="tog(this,event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.onclick(event);}">국악계 아이돌</span>
+        이라는 별명을 얻었다.
+      </div>
+      <div class="intro-cards" style="flex:0 0 280px;max-width:280px;width:auto;margin-top:0;grid-template-columns:1fr;gap:12px;">
+        <div class="icard ic-a" style="padding:18px 14px;gap:8px;"><div class="icard-icon" style="font-size:2.1rem;">🌱</div><div class="icard-name" style="font-size:1.3rem;"><span class="bl" tabindex="0" onclick="tog(this,event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.onclick(event);}">어려웠던 어린 시절</span></div><div class="icard-desc" style="font-size:1.05rem;">가난 속에서도 판소리의 길을 선택</div></div>
+        <div class="icard ic-b" style="padding:18px 14px;gap:8px;"><div class="icard-icon" style="font-size:2.1rem;">🏛</div><div class="icard-name" style="font-size:1.3rem;"><span class="bl" tabindex="0" onclick="tog(this,event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.onclick(event);}">국립창극단</span></div><div class="icard-desc" style="font-size:1.05rem;">2013년 입단, 현재까지 활동 중</div></div>
+      <div class="icard ic-c" style="padding:18px 14px;gap:8px;"><div class="icard-icon" style="font-size:2.1rem;">📺</div><div class="icard-name" style="font-size:1.3rem;"><span class="bl" tabindex="0" onclick="tog(this,event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.onclick(event);}">국악계 아이돌</span></div><div class="icard-desc" style="font-size:1.05rem;">방송으로 판소리를 대중에게 알림</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S8 춘향가 줄거리 -->
+<div class="slide bg-story" id="s11">
+  <div class="stitle">춘향가 줄거리</div><div class="gold-bar"></div>
+  <div class="story-card" style="width:96%;max-width:none;padding:30px 34px;">
+    <div class="step-badge">STORY</div>
+    <div class="scene-body">
+      남원 광한루에서 <span class="kw" tabindex="0" onclick="tog(this,event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.onclick(event);}">이몽룡</span>이 그네 타는 춘향을 보고 <strong>첫눈에 반해</strong>
+      백년가약을 맺지만, 이몽룡은 아버지를 따라 한양으로 떠난다.<br/><br/>
+      신임 사또 <span class="kw" tabindex="0" onclick="tog(this,event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.onclick(event);}">변학도</span>가 춘향에게 수청을 강요하지만 춘향은 <strong>끝까지 절개</strong>를 지킨다.
+      <span class="kw" tabindex="0" onclick="tog(this,event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.onclick(event);}">암행어사</span>가 되어 돌아온 이몽룡이 변학도의 부정을 파헤치고 춘향을 <strong>구해낸다</strong>.
+    </div>
+  </div>
+</div>
+
+<!-- S8b 춘향가 이야기 지도 -->
+<div class="slide bg-story" id="s12">
+  <div class="stitle">「춘향가」 이야기 지도</div>
+  <div class="ssub">클릭하면 다음 이야기가 나타나요</div>
+  <div class="gold-bar"></div>
+  <div class="journey-wrap">
+    <svg class="journey-path" viewBox="0 0 1400 460" preserveAspectRatio="none">
+      <defs>
+        <linearGradient id="journeyGrad3" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stop-color="#C9A84C"/>
+          <stop offset="48%" stop-color="#C9A84C"/>
+          <stop offset="58%" stop-color="#6a5fb8"/>
+          <stop offset="100%" stop-color="#F0D080"/>
+        </linearGradient>
+      </defs>
+      <path d="M 168.0,147.2 C 224.0,147.2 224.0,331.2 280.0,331.2 C 350.0,331.2 350.0,147.2 420.0,147.2 C 490.0,147.2 490.0,331.2 560.0,331.2 C 630.0,331.2 630.0,147.2 700.0,147.2 C 770.0,147.2 770.0,331.2 840.0,331.2 C 910.0,331.2 910.0,147.2 980.0,147.2 C 1050.0,147.2 1050.0,331.2 1120.0,331.2 C 1176.0,331.2 1176.0,147.2 1232.0,147.2 " fill="none" stroke="url(#journeyGrad3)" stroke-width="5" stroke-dasharray="2 15" stroke-linecap="round"/>
+    </svg>
+
+    <div class="journey-node jn-shown" style="left:12%;top:32%;">
+      <div class="jn-icon jn-gold"><span class="jn-num">1</span><img src="images/chun-icon-mongryong.png" alt="이몽룡"></div>
+      <div class="jn-name">이몽룡</div>
+      <div class="jn-cap">광한루에서 만난 <b>이몽룡</b>과<br/>춘향, 첫눈에 반하다</div>
+    </div>
+    <div class="journey-node" style="left:20%;top:72%;">
+      <div class="jn-icon jn-gold"><span class="jn-num">2</span><img src="images/chun-icon-chunhyang.png" alt="성춘향"></div>
+      <div class="jn-name">성춘향</div>
+      <div class="jn-cap">두 사람 백년가약을 맺고<br/><b>사랑</b>을 약속하다</div>
+    </div>
+    <div class="journey-node" style="left:30%;top:32%;">
+      <div class="jn-icon jn-gold"><span class="jn-num">3</span><img src="images/chun-icon-mongryong.png" alt="이몽룡"></div>
+      <div class="jn-name">이몽룡</div>
+      <div class="jn-cap">이몽룡, 아버지를 따라<br/>한양으로 떠나다</div>
+    </div>
+    <div class="journey-node" style="left:40%;top:72%;">
+      <div class="jn-icon jn-gold"><span class="jn-num">4</span><img src="images/chun-icon-byeon.png" alt="변학도"></div>
+      <div class="jn-name">변학도</div>
+      <div class="jn-cap">신임 사또 <b>변학도</b>,<br/>춘향에게 수청을 강요하다</div>
+    </div>
+    <div class="journey-node" style="left:50%;top:32%;">
+      <div class="jn-turn-tag">반전 TWIST</div>
+      <div class="jn-icon jn-turn"><span class="jn-num">5</span><img src="images/chun-icon-chunhyang.png" alt="성춘향"></div>
+      <div class="jn-name">성춘향</div>
+      <div class="jn-cap">매를 맞으면서도<br/><b>절개</b>를 지키는 춘향</div>
+    </div>
+    <div class="journey-node" style="left:60%;top:72%;">
+      <div class="jn-icon jn-indigo"><span class="jn-num">6</span><img src="images/chun-icon-wolmae.png" alt="월매"></div>
+      <div class="jn-name">월매</div>
+      <div class="jn-cap"><b>월매</b>의 걱정과<br/>향단의 옥바라지</div>
+    </div>
+    <div class="journey-node" style="left:70%;top:32%;">
+      <div class="jn-icon jn-indigo"><span class="jn-num">7</span><img src="images/chun-icon-mongryong.png" alt="이몽룡"></div>
+      <div class="jn-name">이몽룡</div>
+      <div class="jn-cap"><b>암행어사</b>가 되어<br/>신분을 숨기고 돌아오다</div>
+    </div>
+    <div class="journey-node" style="left:80%;top:72%;">
+      <div class="jn-icon jn-indigo"><span class="jn-num">8</span><img src="images/chun-icon-byeon.png" alt="변학도"></div>
+      <div class="jn-name">변학도</div>
+      <div class="jn-cap">"암행어사 출두요!"<br/>변학도의 잔치를 뒤엎다</div>
+    </div>
+    <div class="journey-node" style="left:88%;top:32%;">
+      <div class="jn-icon jn-gold"><span class="jn-num">9</span><img src="images/chun-icon-chunhyang.png" alt="성춘향"></div>
+      <div class="jn-name">성춘향</div>
+      <div class="jn-cap">춘향을 구해내고<br/><b>모두가 축하하는 결말</b></div>
+    </div>
+  </div>
+</div>
+
+<!-- S8 춘향가 인물구성도 -->
+<div class="slide bg-char" id="s13">
+  <div class="stitle">춘향가 인물 구성도</div>
+  <div class="ssub" style="font-size:1.3rem;">클릭하면 다음 관계가 하나씩 나타나요</div>
+  <div class="gold-bar"></div>
+  <div class="rel-wrap">
+    <svg class="rel-path" viewBox="0 0 1400 700" preserveAspectRatio="none">
+      <line data-step="2" class="rel-edge" x1="490" y1="294" x2="910" y2="294" stroke="#d8558f" stroke-width="7"/>
+      <line data-step="3" class="rel-edge" x1="196" y1="84" x2="490" y2="294" stroke="#4a9e6e" stroke-width="7"/>
+      <line data-step="3" class="rel-edge" x1="196" y1="84" x2="910" y2="294" stroke="#3fa08f" stroke-width="7"/>
+      <line data-step="4" class="rel-edge" x1="1204" y1="98" x2="910" y2="294" stroke="#3f66c9" stroke-width="7"/>
+      <line data-step="5" class="rel-edge" x1="196" y1="518" x2="490" y2="294" stroke="#5f8fd9" stroke-width="7"/>
+      <line data-step="6" class="rel-edge" x1="490" y1="294" x2="1204" y2="532" stroke="#c9503f" stroke-width="7"/>
+      <line data-step="6" class="rel-edge" x1="910" y1="294" x2="1204" y2="532" stroke="#8a2a2a" stroke-width="7"/>
+    </svg>
+
+    <div class="rel-label" data-step="2" style="left:50%;top:42%;color:#d8558f;">연인</div>
+    <div class="rel-label" data-step="3" style="left:23%;top:26%;color:#4a9e6e;">모녀</div>
+    <div class="rel-label" data-step="3" style="left:44%;top:14%;color:#3fa08f;">장모와 사위</div>
+    <div class="rel-label" data-step="4" style="left:76%;top:27%;color:#3f66c9;">주군과 종</div>
+    <div class="rel-label" data-step="5" style="left:23%;top:58%;color:#5f8fd9;">주인과 시녀</div>
+    <div class="rel-label" data-step="6" style="left:59%;top:60%;color:#c9503f;">적대</div>
+    <div class="rel-label" data-step="6" style="left:78%;top:60%;color:#8a2a2a;">대립</div>
+
+    <div class="rel-node" data-step="1" style="left:35%;top:42%;">
+      <div class="rel-icon"><img src="images/chun-icon-chunhyang.png" alt="성춘향"></div>
+      <div class="rel-name">성춘향</div>
+    </div>
+    <div class="rel-node" data-step="2" style="left:65%;top:42%;">
+      <div class="rel-icon"><img src="images/chun-icon-mongryong.png" alt="이몽룡"></div>
+      <div class="rel-name">이몽룡</div>
+    </div>
+    <div class="rel-node" data-step="3" style="left:14%;top:12%;">
+      <div class="rel-icon"><img src="images/chun-icon-wolmae.png" alt="월매"></div>
+      <div class="rel-name">월매</div>
+    </div>
+    <div class="rel-node" data-step="4" style="left:86%;top:14%;">
+      <div class="rel-icon"><img src="images/chun-icon-bangja.png" alt="방자"></div>
+      <div class="rel-name">방자</div>
+    </div>
+    <div class="rel-node" data-step="5" style="left:14%;top:74%;">
+      <div class="rel-icon"><img src="images/chun-icon-hyangdan.png" alt="향단"></div>
+      <div class="rel-name">향단</div>
+    </div>
+    <div class="rel-node" data-step="6" style="left:86%;top:76%;">
+      <div class="rel-icon"><img src="images/chun-icon-byeon.png" alt="변학도"></div>
+      <div class="rel-name">변학도</div>
+    </div>
+  </div>
+</div>
+
+<!-- S9 춘향가 감상포인트 -->
+<div class="slide bg-quote" id="s14">
+  <div class="stitle">춘향가 감상 포인트</div><div class="gold-bar"></div>
+  <div class="quote-wrap" style="max-width:none;width:96%;flex-direction:row;align-items:center;flex-wrap:wrap;justify-content:center;gap:36px;">
+    <div style="flex:1 1 380px;">
+      <a class="video-link small" href="https://www.youtube.com/watch?v=YV4XlI2ZGhA" target="_blank" rel="noopener noreferrer" style="max-width:520px;margin:0 auto;">
+        <img src="https://img.youtube.com/vi/YV4XlI2ZGhA/hqdefault.jpg" alt="판소리 춘향가 중 사랑가, 소리꾼 김준수" loading="lazy">
+        <div class="vl-play">▶</div>
+        <div class="vl-badge">▶ YouTube에서 보기</div>
+      </a>
+      <div class="video-caption">🎬 소리꾼 김준수 · 판소리 춘향가 중 「사랑가」</div>
+    </div>
+    <div class="q-meaning" style="border-top:none;padding-top:0;flex:1 1 480px;font-size:clamp(1.5rem,2.2vw,2rem);">
+      🎙 <b>소리꾼의 표현력</b> — 한 사람이 여러 인물의 목소리와 감정을 오가며 <b style="color:#90c4f0;">연기하는 힘</b><br/><br/>
+      🙌 <b>고수의 추임새</b> — 소리꾼과 호흡을 맞추며 흥을 돋우는 <b style="color:#90c4f0;">즉흥적 반응</b><br/><br/>
+      🗣 <b>아니리와 창의 교차</b> — 말하듯 설명하는 부분과 노래하는 부분의 <b style="color:#90c4f0;">리듬감</b>
+    </div>
+  </div>
+</div>
+
+<!-- S10 창극 감상 -->
+<div class="slide bg-intro" id="s15">
+  <div class="step-badge" style="margin-bottom:4px;">▶ PREVIEW · 하이라이트 감상</div>
+  <div class="stitle">창극 감상 — 「춘향전」</div>
+  <div class="ssub">영상을 감상한 뒤, 창극에 대해 함께 알아봅시다</div>
+  <div class="gold-bar"></div>
+  <a class="video-link" href="https://www.youtube.com/watch?v=G4-NWpdbqY4" target="_blank" rel="noopener noreferrer">
+      <img src="https://img.youtube.com/vi/G4-NWpdbqY4/hqdefault.jpg" alt="국립창극단 춘향 공연 실황" loading="lazy">
+      <div class="vl-play">▶</div>
+      <div class="vl-badge">▶ YouTube에서 보기</div>
+    </a>
+  <div class="video-caption">🎬 국립창극단 「춘향」 공연 실황</div>
+  <div class="video-desc">국립창극단이 「춘향전」을 창극으로 각색해 올린 실제 무대 공연 실황입니다. 여러 배우가 배역을 나누어 연기하고, 무대·조명·합창이 어우러지는 창극 특유의 스펙터클을 확인할 수 있습니다.</div>
+</div>
+
+<!-- S11 창극이란? -->
+<div class="slide bg-intro" id="s16">
+  <div class="stitle">창극이란?</div>
+  <div class="gold-bar"></div>
+  <div class="intro-def">
+    <span class="kw" tabindex="0" onclick="tog(this,event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.onclick(event);}">창극</span>은 판소리를 여러 명의
+    <span class="bl" tabindex="0" onclick="tog(this,event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.onclick(event);}">배우</span>가 배역을 나누어 부르고,
+    무대장치·의상·조명을 더해 오페라처럼 각색한 <strong>한국형 음악극</strong>이다.
+  </div>
+  <div class="intro-cards">
+    <div class="icard ic-a"><div class="icard-icon">🎭</div><div class="icard-name" style="color:#F0D080;"><span class="bl" tabindex="0" onclick="tog(this,event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.onclick(event);}">배역 분담</span></div><div class="icard-desc">배우마다 한 인물을 맡아 연기</div></div>
+    <div class="icard ic-b"><div class="icard-icon">🎨</div><div class="icard-name" style="color:#a5d6a7;"><span class="bl" tabindex="0" onclick="tog(this,event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.onclick(event);}">무대 연출</span></div><div class="icard-desc">무대장치·조명·의상을 갖춘 극장 공연</div></div>
+    <div class="icard ic-c"><div class="icard-icon">🪕</div><div class="icard-name" style="color:#90b0e0;"><span class="bl" tabindex="0" onclick="tog(this,event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.onclick(event);}">국악관현악</span></div><div class="icard-desc">다양한 국악기가 함께 어우러진 반주</div></div>
+  </div>
+</div>
+
+<!-- S12 창극의 특징 -->
+<div class="slide bg-intro" id="s17">
+  <div class="stitle">창극의 특징</div><div class="gold-bar"></div>
+  <div class="intro-cards" style="margin-top:0;">
+    <div class="icard ic-a"><div class="icard-icon">👥</div><div class="icard-name"><span class="bl" tabindex="0" onclick="tog(this,event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.onclick(event);}">여러 배우</span></div><div class="icard-desc">1인 다역이던 판소리와 달리 배역이 나뉨</div></div>
+    <div class="icard ic-b"><div class="icard-icon">🎨</div><div class="icard-name"><span class="bl" tabindex="0" onclick="tog(this,event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.onclick(event);}">무대미술과 의상</span></div><div class="icard-desc">전통과 현대적 감각이 어우러진 연출</div></div>
+    <div class="icard ic-c"><div class="icard-icon">🎶</div><div class="icard-name"><span class="bl" tabindex="0" onclick="tog(this,event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.onclick(event);}">합창</span></div><div class="icard-desc">여러 소리꾼의 앙상블과 국악기 반주</div></div>
+    <div class="icard ic-a"><div class="icard-icon">🎙</div><div class="icard-name"><span class="bl" tabindex="0" onclick="tog(this,event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.onclick(event);}">도창(都唱)</span></div><div class="icard-desc">장면을 이어주는 해설자 역할이 여전히 남아있음</div></div>
+    <div class="icard ic-b"><div class="icard-icon">🎼</div><div class="icard-name"><span class="bl" tabindex="0" onclick="tog(this,event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.onclick(event);}">작창</span></div><div class="icard-desc">판소리 가락을 무대 상황에 맞게 새롭게 짜서 구성</div></div>
+    <div class="icard ic-c"><div class="icard-icon">🌍</div><div class="icard-name"><span class="bl" tabindex="0" onclick="tog(this,event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.onclick(event);}">창작·재창조</span></div><div class="icard-desc">전통 다섯마당 외에 셰익스피어 등 새 이야기도 각색</div></div>
+  </div>
+</div>
+
+<!-- S13 유명한 창극과 내용요약 -->
+<div class="slide bg-story" id="s18">
+  <div class="stitle">유명한 창극과 내용 요약</div><div class="gold-bar"></div>
+  <div class="story-card" style="width:96%;max-width:none;padding:30px 34px;">
+    <div class="step-badge">FAMOUS CHANGGEUK</div>
+    <div class="opera-list">
+      <div class="opera-row"><span class="opera-term" style="width:160px;"><span class="kw" tabindex="0" onclick="tog(this,event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.onclick(event);}">춘향전</span></span><span>— 판소리 춘향가를 무대화한 <b style="color:#F0D080;">대표 창극</b></span></div>
+      <div class="opera-row"><span class="opera-term" style="width:160px;"><span class="kw" tabindex="0" onclick="tog(this,event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.onclick(event);}">심청전</span></span><span>— 효녀 심청의 이야기를 <b style="color:#F0D080;">다채로운 배역</b>으로 구성</span></div>
+      <div class="opera-row"><span class="opera-term" style="width:160px;"><span class="kw" tabindex="0" onclick="tog(this,event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.onclick(event);}">흥보전</span></span><span>— 흥보와 놀보 형제 이야기를 <b style="color:#F0D080;">무대극</b>으로 확장</span></div>
+      <div class="opera-row"><span class="opera-term" style="width:160px;"><span class="kw" tabindex="0" onclick="tog(this,event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.onclick(event);}">수궁가</span></span><span>— 토끼와 용왕 이야기를 <b style="color:#F0D080;">무대와 합창</b>으로 확장</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- S14 춘향전 작곡가·연출가 소개 -->
+<div class="slide bg-char" id="s19">
+  <div class="stitle">춘향전 작곡가·연출가 소개</div><div class="gold-bar"></div>
+  <div class="char-card" style="max-width:none;width:98%;padding:26px 32px;gap:14px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;width:100%;">
+      <div class="char-badge" style="background:rgba(78,128,102,.18);color:#90c4a4;border:1.5px solid rgba(78,128,102,.3);">창극 전문 단체 · 작창과 연출</div>
+      <div class="char-name-big" style="font-size:clamp(2rem,3.6vw,2.9rem);">국립창극단</div>
+    </div>
+    <div style="display:flex;align-items:stretch;justify-content:center;gap:26px;flex-wrap:wrap;width:100%;">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Korean_theater-Changgeuk-Leaving_Ship-01.jpg/500px-Korean_theater-Changgeuk-Leaving_Ship-01.jpg" alt="창극 무대 공연 모습" style="border-radius:14px;width:auto;height:340px;max-width:440px;object-fit:cover;flex-shrink:0;">
+      <div class="char-q-wrap" style="flex:1 1 380px;font-size:clamp(1.8rem,2.4vw,2.3rem);line-height:1.5;">
+        <span class="bl" tabindex="0" onclick="tog(this,event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.onclick(event);}">1962년</span> 창단되어 판소리를 무대 예술로 계승해온 한국 대표 창극 단체.<br/>
+        <span class="bl" tabindex="0" onclick="tog(this,event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.onclick(event);}">작창가</span>가 판소리 가락을 재구성하고, <span class="bl" tabindex="0" onclick="tog(this,event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.onclick(event);}">연출가</span>가 무대·조명·안무를 더해
+        여러 배우와 합창단이 함께 만드는 무대로 완성한다.
+      </div>
+      <div style="width:250px;flex-shrink:0;display:flex;flex-direction:column;gap:12px;">
+        <div class="icard ic-a" style="padding:18px 14px;gap:8px;"><div class="icard-icon" style="font-size:2rem;">📅</div><div class="icard-name" style="color:#F0D080;font-size:1.25rem;">1962년</div><div class="icard-desc" style="font-size:1.02rem;">국립창극단 창단</div></div>
+        <div class="icard ic-b" style="padding:18px 14px;gap:8px;"><div class="icard-icon" style="font-size:2rem;">🏛</div><div class="icard-name" style="color:#a5d6a7;font-size:1.25rem;">국립극장 소속</div><div class="icard-desc" style="font-size:1.02rem;">한국 대표 창극 단체</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S15 춘향전 줄거리 -->
+<div class="slide bg-story" id="s20">
+  <div class="stitle">춘향전(창극) 줄거리</div><div class="gold-bar"></div>
+  <div class="story-card" style="width:96%;max-width:none;padding:30px 34px;">
+    <div class="step-badge">STORY</div>
+    <div class="scene-body">
+      광한루에서 만난 이몽룡과 춘향이 <strong>서로 사랑</strong>에 빠지고,
+      이몽룡이 한양으로 떠나며 두 사람은 훗날을 기약한다.<br/><br/>
+      변학도의 수청 강요를 춘향이 노래와 연기로 <strong>단호히 거절</strong>하고,
+      암행어사가 된 이몽룡이 화려한 무대 연출과 함께 등장한다.
+      모든 배우와 합창단이 함께하는 <strong>대단원의 화합</strong> 장면으로 마무리된다.
+    </div>
+  </div>
+</div>
+
+<!-- S16 춘향전 인물구성도 -->
+<div class="slide bg-char" id="s21">
+  <div class="stitle">춘향전(창극) 인물 구성도</div>
+  <div class="ssub" style="font-size:1.3rem;">클릭하면 다음 관계가 하나씩 나타나요</div>
+  <div class="gold-bar"></div>
+  <div class="rel-wrap">
+    <svg class="rel-path" viewBox="0 0 1400 700" preserveAspectRatio="none">
+      <line data-step="2" class="rel-edge" x1="490" y1="294" x2="910" y2="294" stroke="#d8558f" stroke-width="7"/>
+      <line data-step="3" class="rel-edge" x1="196" y1="84" x2="490" y2="294" stroke="#4a9e6e" stroke-width="7"/>
+      <line data-step="3" class="rel-edge" x1="196" y1="84" x2="910" y2="294" stroke="#3fa08f" stroke-width="7"/>
+      <line data-step="4" class="rel-edge" x1="1204" y1="98" x2="910" y2="294" stroke="#3f66c9" stroke-width="7"/>
+      <line data-step="5" class="rel-edge" x1="196" y1="518" x2="490" y2="294" stroke="#5f8fd9" stroke-width="7"/>
+      <line data-step="6" class="rel-edge" x1="490" y1="294" x2="1204" y2="532" stroke="#c9503f" stroke-width="7"/>
+      <line data-step="6" class="rel-edge" x1="910" y1="294" x2="1204" y2="532" stroke="#8a2a2a" stroke-width="7"/>
+    </svg>
+
+    <div class="rel-label" data-step="2" style="left:50%;top:42%;color:#d8558f;">연인</div>
+    <div class="rel-label" data-step="3" style="left:23%;top:26%;color:#4a9e6e;">모녀</div>
+    <div class="rel-label" data-step="3" style="left:44%;top:14%;color:#3fa08f;">장모와 사위</div>
+    <div class="rel-label" data-step="4" style="left:76%;top:27%;color:#3f66c9;">주군과 종</div>
+    <div class="rel-label" data-step="5" style="left:23%;top:58%;color:#5f8fd9;">주인과 시녀</div>
+    <div class="rel-label" data-step="6" style="left:59%;top:60%;color:#c9503f;">적대</div>
+    <div class="rel-label" data-step="6" style="left:78%;top:60%;color:#8a2a2a;">대립</div>
+
+    <div class="rel-node" data-step="1" style="left:35%;top:42%;">
+      <div class="rel-icon"><img src="images/chun-icon-chunhyang.png" alt="성춘향"></div>
+      <div class="rel-name">성춘향</div>
+    </div>
+    <div class="rel-node" data-step="2" style="left:65%;top:42%;">
+      <div class="rel-icon"><img src="images/chun-icon-mongryong.png" alt="이몽룡"></div>
+      <div class="rel-name">이몽룡</div>
+    </div>
+    <div class="rel-node" data-step="3" style="left:14%;top:12%;">
+      <div class="rel-icon"><img src="images/chun-icon-wolmae.png" alt="월매"></div>
+      <div class="rel-name">월매</div>
+    </div>
+    <div class="rel-node" data-step="4" style="left:86%;top:14%;">
+      <div class="rel-icon"><img src="images/chun-icon-bangja.png" alt="방자"></div>
+      <div class="rel-name">방자</div>
+    </div>
+    <div class="rel-node" data-step="5" style="left:14%;top:74%;">
+      <div class="rel-icon"><img src="images/chun-icon-hyangdan.png" alt="향단"></div>
+      <div class="rel-name">향단</div>
+    </div>
+    <div class="rel-node" data-step="6" style="left:86%;top:76%;">
+      <div class="rel-icon"><img src="images/chun-icon-byeon.png" alt="변학도"></div>
+      <div class="rel-name">변학도</div>
+    </div>
+  </div>
+</div>
+
+<!-- S17 춘향전 감상포인트 -->
+<div class="slide bg-quote" id="s22">
+  <div class="stitle">춘향전(창극) 감상 포인트</div><div class="gold-bar"></div>
+  <div class="quote-wrap" style="max-width:none;width:96%;flex-direction:row;align-items:center;flex-wrap:wrap;justify-content:center;gap:36px;">
+    <div style="flex:1 1 380px;">
+      <a class="video-link small" href="https://www.youtube.com/watch?v=l5kG25fUyGQ" target="_blank" rel="noopener noreferrer" style="max-width:520px;margin:0 auto;">
+        <img src="https://img.youtube.com/vi/l5kG25fUyGQ/hqdefault.jpg" alt="2020 창극 춘향 명장면 하이라이트" loading="lazy">
+        <div class="vl-play">▶</div>
+        <div class="vl-badge">▶ YouTube에서 보기</div>
+      </a>
+      <div class="video-caption">🎬 창극 「춘향」 명장면 하이라이트</div>
+    </div>
+    <div class="q-meaning" style="border-top:none;padding-top:0;flex:1 1 480px;font-size:clamp(1.5rem,2.2vw,2rem);">
+      🎭 <b>여러 배우의 앙상블</b> — 배역을 나누어 맡은 배우들이 만드는 <b style="color:#90c4f0;">조화</b><br/><br/>
+      🎨 <b>무대미술과 의상</b> — 전통과 현대적 감각이 어우러진 <b style="color:#90c4f0;">무대 연출</b><br/><br/>
+      📣 <b>"암행어사 출두요!"</b> — 판소리와는 다른 <b style="color:#90c4f0;">시각적 스펙터클</b>의 대표 장면
+    </div>
+  </div>
+</div>
+
+<!-- S18 판소리 vs 창극 비교 -->
+<div class="slide bg-think" id="s23">
+  <div class="stitle">판소리 vs 창극 차이점 비교</div>
+  <div class="ssub">빈칸을 클릭하면 정답이 나타납니다</div>
+  <div class="gold-bar"></div>
+  <div class="comp-outer">
+    <div class="comp-thead"><div>비교 항목</div><div>🥁 판소리</div><div>🎭 창극</div></div>
+    <div class="comp-row"><div class="ck">인원</div><div class="cv1"><span class="ca" tabindex="0" onclick="tog(this,event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.onclick(event);}">소리꾼 1명 + 고수 1명</span></div><div class="cv2"><span class="ca" tabindex="0" onclick="tog(this,event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.onclick(event);}">여러 배우 + 국악관현악</span></div></div>
+    <div class="comp-row"><div class="ck">연기</div><div class="cv1"><span class="ca" tabindex="0" onclick="tog(this,event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.onclick(event);}">한 사람이 모든 역할을 오감</span></div><div class="cv2"><span class="ca" tabindex="0" onclick="tog(this,event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.onclick(event);}">배역별로 배우가 나뉘어 연기</span></div></div>
+    <div class="comp-row"><div class="ck">무대</div><div class="cv1"><span class="ca" tabindex="0" onclick="tog(this,event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.onclick(event);}">소박한 판(마당)</span></div><div class="cv2"><span class="ca" tabindex="0" onclick="tog(this,event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.onclick(event);}">무대장치·조명·의상을 갖춘 극장</span></div></div>
+    <div class="comp-row"><div class="ck">등장 시기</div><div class="cv1"><span class="ca" tabindex="0" onclick="tog(this,event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.onclick(event);}">조선 후기(17~18세기)</span></div><div class="cv2"><span class="ca" tabindex="0" onclick="tog(this,event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.onclick(event);}">20세기 초(1900년대)</span></div></div>
+  </div>
+</div>
+
+<!-- S20 4가지 음악극 한눈에 비교 -->
+<div class="slide bg-think" id="s25">
+  <div class="stitle">4가지 음악극 한눈에 비교</div>
+  <div class="ssub">빈칸을 클릭하면 정답이 나타납니다</div>
+  <div class="gold-bar"></div>
+  <div class="comp-outer">
+    <div class="comp-thead" style="grid-template-columns:1.1fr 1fr 1fr 1fr 1fr;">
+      <div>구분</div><div>🎼 오페라</div><div>🎤 뮤지컬</div><div>🥁 판소리</div><div>🎭 창극</div>
+    </div>
+    <div class="comp-row" style="grid-template-columns:1.1fr 1fr 1fr 1fr 1fr;">
+      <div class="ck">발생 지역</div>
+      <div class="cv1"><span class="ca" tabindex="0" onclick="tog(this,event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.onclick(event);}">이탈리아</span></div>
+      <div class="cv2"><span class="ca" tabindex="0" onclick="tog(this,event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.onclick(event);}">미국</span></div>
+      <div class="cv3"><span class="ca" tabindex="0" onclick="tog(this,event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.onclick(event);}">한국</span></div>
+      <div class="cv4"><span class="ca" tabindex="0" onclick="tog(this,event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.onclick(event);}">한국</span></div>
+    </div>
+    <div class="comp-row" style="grid-template-columns:1.1fr 1fr 1fr 1fr 1fr;">
+      <div class="ck">발생 시기</div>
+      <div class="cv1"><span class="ca" tabindex="0" onclick="tog(this,event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.onclick(event);}">1597년경</span></div>
+      <div class="cv2"><span class="ca" tabindex="0" onclick="tog(this,event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.onclick(event);}">1866년경</span></div>
+      <div class="cv3"><span class="ca" tabindex="0" onclick="tog(this,event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.onclick(event);}">조선 후기</span></div>
+      <div class="cv4"><span class="ca" tabindex="0" onclick="tog(this,event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.onclick(event);}">1900년대 초</span></div>
+    </div>
+    <div class="comp-row" style="grid-template-columns:1.1fr 1fr 1fr 1fr 1fr;">
+      <div class="ck">핵심 요소</div>
+      <div class="cv1"><span class="ca" tabindex="0" onclick="tog(this,event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.onclick(event);}">클래식 발성·아리아</span></div>
+      <div class="cv2"><span class="ca" tabindex="0" onclick="tog(this,event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.onclick(event);}">대중적 발성·안무</span></div>
+      <div class="cv3"><span class="ca" tabindex="0" onclick="tog(this,event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.onclick(event);}">1인 소리·고수 장단</span></div>
+      <div class="cv4"><span class="ca" tabindex="0" onclick="tog(this,event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.onclick(event);}">배역 분담·합창</span></div>
+    </div>
+    <div class="comp-row" style="grid-template-columns:1.1fr 1fr 1fr 1fr 1fr;">
+      <div class="ck">대표작</div>
+      <div class="cv1"><span class="ca" tabindex="0" onclick="tog(this,event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.onclick(event);}">마술피리</span></div>
+      <div class="cv2"><span class="ca" tabindex="0" onclick="tog(this,event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.onclick(event);}">오페라의 유령</span></div>
+      <div class="cv3"><span class="ca" tabindex="0" onclick="tog(this,event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.onclick(event);}">춘향가</span></div>
+      <div class="cv4"><span class="ca" tabindex="0" onclick="tog(this,event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.onclick(event);}">춘향전</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- S19 판소리 vs 창극 비교 사진 -->
+<div class="slide bg-char" id="s24">
+  <div class="stitle">판소리 vs 창극 — 무대 비교</div><div class="gold-bar"></div>
+  <img src="images/판소리와 창극 비교 사진.png" alt="판소리(1인 소리꾼과 고수)와 창극(여러 배우가 함께하는 무대) 비교 그림" style="max-width:96%;max-height:75vh;width:auto;border-radius:16px;box-shadow:0 14px 50px rgba(0,0,0,.5);" onerror="this.onerror=null; this.style.background='linear-gradient(135deg,#333,#555)'; this.alt=this.alt||'이미지';">
+</div>
+
+<!-- S21 퀴즈로 마무리 -->
+<div class="slide bg-essay" id="s26">
+  <div class="stitle">퀴즈로 마무리</div><div class="gold-bar"></div>
+  <div class="story-card" style="width:96%;max-width:none;padding:30px 34px;">
+    <div class="step-badge">QUICK REVIEW · 빈칸을 클릭해보세요</div>
+    <div class="scene-body">
+      판소리는 소리꾼과 <span class="bl" tabindex="0" onclick="tog(this,event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.onclick(event);}">고수</span>가 함께 만드는 음악극이다.<br/>
+      판소리는 <span class="bl" tabindex="0" onclick="tog(this,event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.onclick(event);}">2003</span>년 유네스코 인류무형문화유산으로 등재되었다.<br/>
+      창극은 판소리를 여러 명의 <span class="bl" tabindex="0" onclick="tog(this,event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.onclick(event);}">배우</span>가 나누어 연기하는 음악극이다.<br/>
+      국립창극단은 <span class="bl" tabindex="0" onclick="tog(this,event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.onclick(event);}">1962</span>년에 창단되었다.
+    </div>
+  </div>
+  <div class="quote-wrap" style="margin-top:18px;">
+    <div class="q-quiz">❓ 창극이 판소리와 다른 가장 큰 특징은?</div>
+    <div class="q-tags">
+      <span class="qtag" onclick="pickQ(this,true,'qf')">여러 배우가 배역을 나누어 무대에서 연기한다</span>
+      <span class="qtag" onclick="pickQ(this,false,'qf')">소리꾼 혼자 모든 역할을 연기한다</span>
+      <span class="qtag" onclick="pickQ(this,false,'qf')">악기 반주 없이 노래만 한다</span>
+    </div>
+  </div>
+</div>
+
+</div><!-- /deck -->
+
+
+
+<script>
+const TOTAL=27;let cur=0;
+
+document.querySelectorAll('.slide').forEach(s=>{
+  const wrap=document.createElement('div');
+  wrap.className='slide-fit';
+  while(s.firstChild)wrap.appendChild(s.firstChild);
+  s.appendChild(wrap);
+});
+
+const dotsEl=document.getElementById('dots');
+for(let i=0;i<TOTAL;i++){
+  const d=document.createElement('span');
+  d.className='dot'+(i===0?' active':'');
+  d.onclick=e=>{e.stopPropagation();goSlide(i);};
+  dotsEl.appendChild(d);
+}
+function updateHUD(){
+  document.getElementById('hnum').textContent=(cur+1)+' / '+TOTAL;
+  document.querySelectorAll('.dot').forEach((d,i)=>d.classList.toggle('active',i===cur));
+}
+function fitSlide(el){
+  if(!el)return;
+  const wrap=el.querySelector('.slide-fit');
+  if(!wrap)return;
+  wrap.style.transform='';
+  const cs=getComputedStyle(el);
+  const availH=el.clientHeight-parseFloat(cs.paddingTop)-parseFloat(cs.paddingBottom);
+  const availW=el.clientWidth-parseFloat(cs.paddingLeft)-parseFloat(cs.paddingRight);
+  const scale=Math.min(1, availH/wrap.scrollHeight, availW/wrap.scrollWidth);
+  wrap.style.transform=(scale<0.999&&isFinite(scale))?('scale('+scale.toFixed(3)+')'):'';
+  wrap.style.transformOrigin='top center';
+}
+function goSlide(n){
+  document.getElementById('s'+cur).classList.remove('active');
+  cur=Math.max(0,Math.min(TOTAL-1,n));
+  const el=document.getElementById('s'+cur);
+  el.classList.add('active');
+  fitSlide(el);
+  updateHUD();beep(440,.05,'square',.09);
+}
+function move(d){goSlide(cur+d);}
+window.addEventListener('resize',()=>fitSlide(document.getElementById('s'+cur)));
+document.querySelectorAll('#deck img').forEach(img=>img.addEventListener('load',()=>fitSlide(document.getElementById('s'+cur))));
+fitSlide(document.getElementById('s0'));
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'||e.key===' ')move(1);
+  if(e.key==='ArrowLeft')move(-1);
+});
+document.getElementById('deck').addEventListener('click',e=>{
+  const skip=['.bl','.ca','.an','.ord-item','.essay-btn','.qtag','.kw','.video-link','button'];
+  if(!skip.some(s=>e.target.closest(s)))move(1);
+});
+function tog(el,e){
+  if(e)e.stopPropagation();
+  el.classList.toggle('show');
+  el.classList.contains('show')?(playOk(),spark(el)):playHide();
+}
+function pickQ(el,isCorrect,group){
+  const parent=el.closest('.quote-wrap');
+  parent.querySelectorAll('.qtag').forEach(t=>{
+    if((t.getAttribute('onclick')||'').includes("'"+group+"'"))
+      t.classList.remove('qans','qwrong');
+  });
+  el.classList.add(isCorrect?'qans':'qwrong');
+  isCorrect?playOk():playHide();
+}
+const AC=new(window.AudioContext||window.webkitAudioContext)();
+function beep(f,d,t='triangle',g=.18){
+  const o=AC.createOscillator(),gn=AC.createGain();
+  o.type=t;o.frequency.value=f;
+  gn.gain.setValueAtTime(g,AC.currentTime);
+  gn.gain.exponentialRampToValueAtTime(.001,AC.currentTime+d);
+  o.connect(gn);gn.connect(AC.destination);
+  o.start();o.stop(AC.currentTime+d);
+}
+function playOk(){beep(523,.08);setTimeout(()=>beep(659,.08),80);setTimeout(()=>beep(784,.16),160);}
+function playHide(){beep(440,.07,'sine',.18);setTimeout(()=>beep(330,.12,'sine',.14),70);}
+function spark(el){
+  const r=el.getBoundingClientRect();
+  const cx=r.left+r.width/2,cy=r.top+r.height/2;
+  ['✦','✧','◈','◇','❖'].forEach(ch=>{
+    const p=document.createElement('span');
+    p.className='particle';p.textContent=ch;
+    p.style.cssText=`left:${cx+Math.random()*60-30}px;top:${cy+Math.random()*20-10}px;color:#F0D080;`;
+    document.body.appendChild(p);
+    setTimeout(()=>p.remove(),1200);
+  });
+}
+
+function setupJourney(slideId){
+  const slide = document.getElementById(slideId);
+  const nodes = slide.querySelectorAll(".journey-node");
+  let shown = 1;
+  function paint(){ nodes.forEach((n, i) => n.classList.toggle("jn-shown", i < shown)); }
+  slide.addEventListener("click", e => {
+    if (shown < nodes.length) {
+      e.stopPropagation();
+      shown++;
+      paint();
+      if (shown < nodes.length) beep(392 + shown * 30, .06, "triangle", .12);
+      else playOk();
+    }
+  });
+  new MutationObserver(() => {
+    if (slide.classList.contains("active")) { shown = 1; paint(); }
+  }).observe(slide, { attributes: true, attributeFilter: ["class"] });
+  paint();
+}
+
+function setupRel(slideId){
+  const slide = document.getElementById(slideId);
+  const pieces = slide.querySelectorAll("[data-step]");
+  const maxStep = Math.max(...Array.from(pieces).map(el => Number(el.dataset.step)));
+  let shown = 1;
+  function paint(){ pieces.forEach(el => el.classList.toggle("rel-shown", Number(el.dataset.step) <= shown)); }
+  slide.addEventListener("click", e => {
+    if (shown < maxStep) {
+      e.stopPropagation();
+      shown++;
+      paint();
+      if (shown < maxStep) beep(392 + shown * 30, .06, "triangle", .12);
+      else playOk();
+    }
+  });
+  new MutationObserver(() => {
+    if (slide.classList.contains("active")) { shown = 1; paint(); }
+  }).observe(slide, { attributes: true, attributeFilter: ["class"] });
+  paint();
+}
+
+setupJourney("s12");
+setupRel("s13");
+setupRel("s21");
+
+function toggleHudMenu(e, id){
+  e.stopPropagation();
+  document.querySelectorAll(".hud-dropdown").forEach(d => { if (d.id !== id) d.classList.remove("open"); });
+  document.getElementById(id).classList.toggle("open");
+}
+document.addEventListener("click", () => {
+  document.querySelectorAll(".hud-dropdown").forEach(d => d.classList.remove("open"));
+});
+</script>
+</body>
+</html>

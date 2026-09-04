@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>미니북 만들기 활동 PPT</title>
+<link href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&family=Noto+Serif+KR:wght@300;400;600;700;900&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --gold:#C9A84C;--gold2:#F0D080;
+  --ans:#4fd8e0;--ans-bg:rgba(79,216,224,.16);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{width:100%;height:100%;overflow:hidden;}
+body{font-family:'Noto Serif KR',serif;word-break:keep-all;overflow-wrap:break-word;}
+
+#hud{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;align-items:center;justify-content:space-between;
+  padding:10px 32px;background:rgba(0,0,0,.6);backdrop-filter:blur(12px);border-bottom:1px solid rgba(201,168,76,.25);}
+.htitle{color:var(--gold2);font-family:'Nanum Myeongjo',serif;font-size:1.1rem;font-weight:800;letter-spacing:3px;text-decoration:none;}
+#dots{display:flex;gap:5px;flex-wrap:wrap;justify-content:center;max-width:52%;}
+.dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.2);cursor:pointer;transition:.3s;}
+.dot.active{background:var(--gold);transform:scale(1.5);}
+.hnum{color:rgba(255,255,255,.5);font-size:.9rem;letter-spacing:1px;}
+
+.nav-btn{position:fixed;top:50%;transform:translateY(-50%);z-index:400;width:52px;height:52px;border-radius:50%;
+  background:rgba(0,0,0,.45);border:1.5px solid rgba(201,168,76,.35);color:rgba(255,255,255,.85);font-size:1.8rem;
+  display:flex;align-items:center;justify-content:center;cursor:pointer;transition:.3s;user-select:none;}
+.nav-btn:hover{background:rgba(201,168,76,.3);}
+#btnPrev{left:14px;}#btnNext{right:14px;}
+
+#deck{width:100%;height:100%;}
+.slide{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;
+  padding:74px 36px 36px;cursor:pointer;overflow:hidden;}
+.slide:has(.stitle){justify-content:flex-start;}
+.slide.active{display:flex;}
+.slide-fit{display:flex;flex-direction:column;align-items:center;width:100%;}
+
+.bg-title {background:linear-gradient(145deg,#1A0800 0%,#3C1A08 40%,#1A0A00 100%);}
+.bg-intro {background:linear-gradient(145deg,#0a1020 0%,#122038 45%,#080c18 100%);}
+.bg-story {background:linear-gradient(145deg,#0a1810 0%,#122818 45%,#060e08 100%);}
+.bg-scene {background:linear-gradient(145deg,#001018 0%,#002030 45%,#000810 100%);}
+.bg-essay {background:linear-gradient(145deg,#100800 0%,#1e1000 45%,#080400 100%);}
+
+.gold-bar{width:50px;height:2.5px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:0 auto 18px;}
+.stitle{font-family:'Nanum Myeongjo',serif;font-size:clamp(2.5rem,4.6vw,3.9rem);font-weight:800;color:#fff;letter-spacing:.09em;text-align:center;margin-bottom:6px;text-shadow:0 2px 20px rgba(201,168,76,.4);}
+.ssub{font-size:clamp(.9rem,1.4vw,1.15rem);color:rgba(255,255,255,.4);letter-spacing:.15em;text-align:center;margin-bottom:14px;font-weight:300;}
+
+.t0{display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center;}
+.t0-main{font-family:'Nanum Myeongjo',serif;font-size:clamp(3.4rem,7.5vw,6.4rem);font-weight:800;color:#fff;line-height:1.15;letter-spacing:.08em;text-shadow:0 0 60px rgba(201,168,76,.5);}
+.t0-sub{font-size:clamp(1.3rem,2.4vw,2.1rem);letter-spacing:.35em;color:var(--gold);font-weight:300;}
+
+.intro-def{background:rgba(255,255,255,.06);border-left:5px solid var(--gold);border-radius:0 10px 10px 0;padding:20px 26px;font-size:clamp(1.7rem,2.6vw,2.35rem);color:rgba(255,255,255,.9);line-height:1.75;font-weight:300;width:88%;max-width:1180px;}
+.intro-def strong{color:var(--gold2);font-weight:800;}
+
+.story-card{width:100%;max-width:1180px;background:rgba(255,255,255,.05);border:1.5px solid rgba(78,128,102,.3);border-radius:20px;padding:34px 44px;display:flex;flex-direction:column;gap:16px;align-items:center;}
+.step-badge{font-size:clamp(.9rem,1.4vw,1.1rem);letter-spacing:.22em;color:var(--gold);font-weight:700;align-self:flex-start;}
+.scene-body{font-size:clamp(1.45rem,2.3vw,1.95rem);color:rgba(255,255,255,.82);line-height:1.85;font-weight:300;width:100%;}
+.scene-body strong{color:var(--gold2);font-weight:700;}
+
+.fold-flow{display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap;width:100%;margin:8px auto;}
+.fold-step{display:flex;flex-direction:column;align-items:center;gap:8px;}
+.fold-box{width:110px;height:76px;border:2px solid var(--gold);border-radius:8px;background:rgba(201,168,76,.08);display:flex;align-items:center;justify-content:center;font-size:2rem;}
+.fold-box.split{background:repeating-linear-gradient(90deg,rgba(201,168,76,.08) 0 24px,rgba(201,168,76,.18) 24px 26px);}
+.fold-label{font-size:1.05rem;color:rgba(255,255,255,.65);text-align:center;max-width:130px;font-weight:300;}
+.fold-arrow{font-size:1.8rem;color:var(--gold);}
+
+.panel-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;width:94%;max-width:1180px;}
+.panel-item{background:rgba(255,255,255,.05);border:1.5px solid rgba(201,168,76,.25);border-radius:14px;padding:18px 12px;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;}
+.panel-num{width:44px;height:44px;border-radius:50%;background:rgba(201,168,76,.15);border:2px solid var(--gold);
+  display:flex;align-items:center;justify-content:center;font-family:'Nanum Myeongjo',serif;font-weight:800;color:var(--gold2);font-size:1.2rem;}
+.panel-name{font-size:1.1rem;color:#fff;font-weight:700;}
+
+.zine-grid{display:grid;grid-template-columns:repeat(4,1fr);grid-template-rows:repeat(2,1fr);gap:6px;width:92%;max-width:1250px;aspect-ratio:1.7;border:2px solid rgba(0,0,0,.5);border-radius:10px;overflow:hidden;background:#000;}
+.zine-cell{display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:14px 10px;border:2.5px dashed rgba(0,0,0,.25);}
+.zine-cell.flip{transform:rotate(180deg);}
+.zine-label{font-size:clamp(1.6rem,3vw,2.5rem);font-weight:800;font-family:'Nanum Myeongjo',serif;text-align:center;line-height:1.25;
+  -webkit-text-stroke:1.6px #fff;paint-order:stroke fill;
+  text-shadow:0 0 6px #fff,0 0 6px #fff,0 0 6px #fff,0 0 6px #fff;}
+.zine-num{font-size:clamp(1.1rem,1.8vw,1.5rem);color:rgba(0,0,0,.6);font-weight:700;}
+.zine-c1{background:#f2e9fb;}
+.zine-c1 .zine-label{color:#7e22ce;}
+.zine-c2{background:#fdf1de;}
+.zine-c2 .zine-label{color:#c2410c;}
+.zine-c3{background:#e5f5ea;}
+.zine-c3 .zine-label{color:#15803d;}
+.zine-c4{background:#e7edfa;}
+.zine-c4 .zine-label{color:#1d4ed8;}
+.zine-c5{background:#fbe6f2;}
+.zine-c5 .zine-label{color:#be185d;}
+.zine-c6{background:#e2f6f3;}
+.zine-c6 .zine-label{color:#0f766e;}
+.zine-c7{background:#eceef0;}
+.zine-c7 .zine-label{color:#374151;}
+.zine-c8{background:#fbe7e7;}
+.zine-c8 .zine-label{color:#b91c1c;}
+
+.particle{position:fixed;pointer-events:none;z-index:9999;font-size:1rem;animation:pfly 1.1s ease-out forwards;}
+@keyframes pfly{0%{opacity:1;transform:translateY(0)scale(1);}100%{opacity:0;transform:translateY(-90px)scale(.1);}}
+
+.kw{display:inline-block;min-width:70px;padding:1px 10px;border-bottom:2.5px solid rgba(240,208,128,.6);
+  cursor:pointer;color:transparent;font-weight:800;transition:.25s;border-radius:4px;font-size:inherit;}
+.kw:hover{background:rgba(255,255,255,.07);}
+.kw.show{color:var(--gold2)!important;background:rgba(240,208,128,.12);border-bottom-color:var(--gold2);}
+.bl:focus-visible,.ca:focus-visible,.kw:focus-visible{outline:2px solid var(--gold2);outline-offset:2px;}
+</style>
+</head>
+<body>
+
+<div id="hud">
+  <a class="htitle" href="index.html">🎭 PPT3 · 미니북 활동</a>
+  <div id="dots"></div>
+  <span class="hnum" id="hnum">1 / 5</span>
+</div>
+<button class="nav-btn" id="btnPrev" onclick="move(-1)">&#8592;</button>
+<button class="nav-btn" id="btnNext" onclick="move(1)">&#8594;</button>
+
+<div id="deck">
+
+<!-- S0 표지 -->
+<div class="slide bg-title active" id="s0">
+  <div class="t0">
+    <div style="font-size:clamp(3.2rem,6vw,5.2rem);">📔</div>
+    <div class="t0-main">미니북 만들기</div>
+    <div class="t0-sub">MINI-BOOK ACTIVITY</div>
+    <div class="gold-bar" style="margin:4px auto 0;"></div>
+  </div>
+</div>
+
+<!-- S1 미니북이란? -->
+<div class="slide bg-intro" id="s1">
+  <div class="stitle">미니북이란?</div><div class="gold-bar"></div>
+  <div class="intro-def">
+    <span class="kw" tabindex="0" onclick="tog(this,event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.onclick(event);}">미니북</span>은 종이 한 장을 여러 번 접고 살짝 잘라서 만드는 작은 책자로,
+    오늘 배운 <strong>오페라·뮤지컬·판소리·창극</strong> 내용을 그림과 글로
+    직접 정리해보는 활동이다. 접었다 펼치면 총 <strong>8쪽</strong>짜리 나만의 책이 완성된다.
+  </div>
+</div>
+
+<!-- S2 B4 접는 방법 -->
+<div class="slide bg-story" id="s2">
+  <div class="stitle">B4 접는 방법</div><div class="gold-bar"></div>
+  <div class="story-card">
+    <div class="step-badge">FOLDING GUIDE</div>
+    <img src="images/미니북 만들기 순서.png" alt="미니북 접는 순서 6단계 (반접기, 4등분 접기, 가운데 자르기, 펼쳐 밀어넣기, 접어서 책 완성)" style="width:100%;max-width:1000px;height:auto;border-radius:12px;box-shadow:0 10px 40px rgba(0,0,0,.4);">
+    <div class="scene-body" style="text-align:center;">
+      가로·세로 각각 반씩 접으면 종이 위에 <strong>8칸</strong>의 접힌 선이 생긴다.<br/>
+      이 선을 따라 다음 단계에서 가위집을 낼 것이다.
+    </div>
+  </div>
+</div>
+
+<!-- S3 8분할 구성 한눈에 보기 -->
+<div class="slide bg-story" id="s3">
+  <div class="stitle">8분할 구성 한눈에 보기</div><div class="gold-bar"></div>
+  <div class="zine-grid">
+    <div class="zine-cell zine-c1 flip"><span class="zine-label">인상 깊은<br/>장면</span><span class="zine-num">- 5 -</span></div>
+    <div class="zine-cell zine-c2 flip"><span class="zine-label">줄거리</span><span class="zine-num">- 4 -</span></div>
+    <div class="zine-cell zine-c3 flip"><span class="zine-label">작곡가<br/>(연주가)</span><span class="zine-num">- 3 -</span></div>
+    <div class="zine-cell zine-c4 flip"><span class="zine-label">음악극의<br/>특징</span><span class="zine-num">- 2 -</span></div>
+    <div class="zine-cell zine-c5"><span class="zine-label">느낀 점 1</span><span class="zine-num">- 6 -</span></div>
+    <div class="zine-cell zine-c6"><span class="zine-label">느낀 점 2</span><span class="zine-num">- 7 -</span></div>
+    <div class="zine-cell zine-c7"><span class="zine-label">비워두기</span><span class="zine-num">- 8 -</span></div>
+    <div class="zine-cell zine-c8"><span class="zine-label">표지</span><span class="zine-num">- 1 -</span></div>
+  </div>
+</div>
+
+<!-- S4 활동 안내 -->
+<div class="slide bg-essay" id="s4">
+  <div style="display:flex;flex-direction:column;align-items:center;gap:20px;text-align:center;">
+    <div style="font-size:clamp(3.4rem,7vw,5.6rem);">📔</div>
+    <div class="stitle" style="font-size:clamp(2rem,4vw,3.4rem);">활동 안내</div>
+    <div class="gold-bar"></div>
+    <div class="story-card">
+      <div class="step-badge">ACTIVITY GUIDE</div>
+      <div class="scene-body">
+        ① B4 용지와 가위, 색연필을 준비한다.<br/>
+        ② 접는 방법에 따라 8칸 <span class="kw" tabindex="0" onclick="tog(this,event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.onclick(event);}">미니북</span>을 만든다.<br/>
+        ③ 오페라, 뮤지컬, 판소리, 창극 중 1개의 음악극을 골라<br/>
+        각 페이지에 해당되는 내용을 정리한다.<br/>
+        ④ 색칠도 하고 미니북을 꾸민 후 제출한다.
+      </div>
+    </div>
+    <div style="font-size:clamp(1.1rem,1.7vw,1.4rem);color:rgba(255,255,255,.6);font-weight:300;margin-top:4px;">
+      <span style="color:var(--gold2);font-weight:700;">음악극을 나만의 책으로 완성해봅시다.</span>
+    </div>
+  </div>
+</div>
+
+</div><!-- /deck -->
+
+
+
+<script>
+const TOTAL=5;let cur=0;
+
+document.querySelectorAll('.slide').forEach(s=>{
+  const wrap=document.createElement('div');
+  wrap.className='slide-fit';
+  while(s.firstChild)wrap.appendChild(s.firstChild);
+  s.appendChild(wrap);
+});
+
+const dotsEl=document.getElementById('dots');
+for(let i=0;i<TOTAL;i++){
+  const d=document.createElement('span');
+  d.className='dot'+(i===0?' active':'');
+  d.onclick=e=>{e.stopPropagation();goSlide(i);};
+  dotsEl.appendChild(d);
+}
+function updateHUD(){
+  document.getElementById('hnum').textContent=(cur+1)+' / '+TOTAL;
+  document.querySelectorAll('.dot').forEach((d,i)=>d.classList.toggle('active',i===cur));
+}
+function fitSlide(el){
+  if(!el)return;
+  const wrap=el.querySelector('.slide-fit');
+  if(!wrap)return;
+  wrap.style.transform='';
+  const cs=getComputedStyle(el);
+  const availH=el.clientHeight-parseFloat(cs.paddingTop)-parseFloat(cs.paddingBottom);
+  const availW=el.clientWidth-parseFloat(cs.paddingLeft)-parseFloat(cs.paddingRight);
+  const scale=Math.min(1, availH/wrap.scrollHeight, availW/wrap.scrollWidth);
+  wrap.style.transform=(scale<0.999&&isFinite(scale))?('scale('+scale.toFixed(3)+')'):'';
+  wrap.style.transformOrigin='top center';
+}
+function goSlide(n){
+  document.getElementById('s'+cur).classList.remove('active');
+  cur=Math.max(0,Math.min(TOTAL-1,n));
+  const el=document.getElementById('s'+cur);
+  el.classList.add('active');
+  fitSlide(el);
+  updateHUD();beep(440,.05,'square',.09);
+}
+function move(d){goSlide(cur+d);}
+window.addEventListener('resize',()=>fitSlide(document.getElementById('s'+cur)));
+document.querySelectorAll('#deck img').forEach(img=>img.addEventListener('load',()=>fitSlide(document.getElementById('s'+cur))));
+fitSlide(document.getElementById('s0'));
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'||e.key===' ')move(1);
+  if(e.key==='ArrowLeft')move(-1);
+});
+document.getElementById('deck').addEventListener('click',e=>{
+  const skip=['.kw','button'];
+  if(!skip.some(s=>e.target.closest(s)))move(1);
+});
+const AC=new(window.AudioContext||window.webkitAudioContext)();
+function beep(f,d,t='triangle',g=.18){
+  const o=AC.createOscillator(),gn=AC.createGain();
+  o.type=t;o.frequency.value=f;
+  gn.gain.setValueAtTime(g,AC.currentTime);
+  gn.gain.exponentialRampToValueAtTime(.001,AC.currentTime+d);
+  o.connect(gn);gn.connect(AC.destination);
+  o.start();o.stop(AC.currentTime+d);
+}
+function tog(el,e){
+  if(e)e.stopPropagation();
+  el.classList.toggle('show');
+  el.classList.contains('show')?(playOk(),spark(el)):playHide();
+}
+function playOk(){beep(523,.08);setTimeout(()=>beep(659,.08),80);setTimeout(()=>beep(784,.16),160);}
+function playHide(){beep(440,.07,'sine',.18);setTimeout(()=>beep(330,.12,'sine',.14),70);}
+function spark(el){
+  const r=el.getBoundingClientRect();
+  const cx=r.left+r.width/2,cy=r.top+r.height/2;
+  ['✦','✧','◈','◇','❖'].forEach(ch=>{
+    const p=document.createElement('span');
+    p.className='particle';p.textContent=ch;
+    p.style.cssText=`left:${cx+Math.random()*60-30}px;top:${cy+Math.random()*20-10}px;color:#F0D080;`;
+    document.body.appendChild(p);
+    setTimeout(()=>p.remove(),1200);
+  });
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>오페라 마술피리 정답지</title>
+<link href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&family=Noto+Serif+KR:wght@300;400;600;700;900&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Noto Serif KR',serif;background:#b8b8b8;color:#111;word-break:keep-all;overflow-wrap:break-word;}
+
+.page{width:210mm;height:297mm;overflow:hidden;margin:0 auto 16px;background:#fff;padding:5mm 11mm 5mm;display:flex;flex-direction:column;page-break-after:always;page-break-inside:avoid;box-shadow:0 3px 14px rgba(0,0,0,.22);}
+@media print{
+  body{background:#fff;margin:0;padding:0;}
+  .page{margin:0;box-shadow:none;page-break-after:always;page-break-inside:avoid;width:210mm;height:297mm;}
+  @page{size:A4 portrait;margin:0;}
+}
+
+.sec-title{font-family:'Nanum Myeongjo',serif;font-size:17.5pt;font-weight:800;color:#111;border-bottom:2.5px solid #444;padding-bottom:4px;margin-bottom:6px;letter-spacing:.05em;flex-shrink:0;}
+.sec-sub{font-size:11.5pt;color:#444;margin-bottom:3px;font-style:italic;flex-shrink:0;}
+.divider{width:100%;height:1px;background:#bbb;margin:5px 0;flex-shrink:0;}
+
+.chip{font-size:9.5pt;background:#f0f0f0;border:1px solid #aaa;border-radius:8px;padding:1.5px 6px;color:#111;display:inline-block;margin:1.5px 1.5px;font-weight:600;}
+.blank{display:inline-block;border-bottom:2.5px solid #555;border-radius:3px;padding:2px 5px;font-weight:800;font-size:inherit;min-width:52px;}
+.blank-md{min-width:84px;}
+.blank-lg{min-width:106px;}
+
+.page-footer{margin-top:auto;padding-top:4px;border-top:1.5px solid #bbb;display:flex;justify-content:space-between;align-items:center;font-size:11pt;color:#777;flex-shrink:0;font-weight:600;}
+.page-num{width:22px;height:22px;border-radius:50%;background:#333;color:#fff;font-size:11pt;font-weight:800;display:flex;align-items:center;justify-content:center;}
+
+.p1-header{border:2px solid #aaa;border-radius:8px;padding:16px 20px;display:flex;align-items:center;justify-content:space-between;margin-bottom:5px;flex-shrink:0;}
+.p1-title{font-family:'Nanum Myeongjo',serif;font-size:32.5pt;font-weight:800;color:#111;letter-spacing:.2em;line-height:1;}
+.p1-sub{font-size:10pt;color:#444;letter-spacing:.1em;margin-top:3px;font-weight:600;}
+.p1-info{font-size:9.5pt;color:#555;text-align:right;line-height:1.7;font-weight:600;white-space:nowrap;}
+.p1-info b{color:#111;font-weight:800;}
+
+.stu-bar{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:5px;flex-shrink:0;}
+.stu-cell{border:2px solid #bbb;border-radius:6px;padding:7px 12px;display:flex;align-items:center;gap:8px;}
+.stu-label{font-weight:800;color:#111;font-size:15pt;white-space:nowrap;}
+.stu-line{flex:1;border-bottom:2px solid #888;height:18px;}
+
+.def-box{border:2px solid #bbb;border-left:5px solid #666;border-radius:6px;padding:7px 12px;font-size:12.5pt;line-height:1.45;color:#111;font-weight:600;margin-bottom:4px;flex-shrink:0;}
+
+.elem-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:5px;flex-shrink:0;}
+.elem-card{border:2px solid #bbb;border-radius:6px;padding:5px 6px;text-align:center;}
+.elem-icon{font-size:13pt;display:block;margin-bottom:1px;}
+.elem-name{font-size:11pt;font-weight:800;color:#111;margin-bottom:1px;}
+.elem-desc{font-size:9.8pt;color:#333;line-height:1.25;font-weight:600;}
+
+.term-table{width:100%;border-collapse:collapse;font-size:13pt;flex-shrink:0;}
+.term-table th{background:#e8e8e8;color:#111;padding:9px 11px;font-weight:800;border:1.5px solid #aaa;font-size:13pt;}
+.term-table td{padding:9px 11px;border:1.5px solid #bbb;vertical-align:middle;line-height:1.5;font-size:13pt;font-weight:600;}
+.term-table tr:nth-child(even) td{background:#fafafa;}
+.term-key{font-weight:800;color:#111;text-align:center;width:110px;}
+
+.comp-wrap{width:100%;border:2px solid #aaa;border-radius:6px;overflow:hidden;margin-bottom:5px;flex-shrink:0;}
+.comp-head{display:grid;grid-template-columns:82px 1fr 1fr;background:#e8e8e8;border-bottom:2px solid #aaa;}
+.comp-head-cell{padding:5px 8px;text-align:center;font-weight:800;font-size:11.5pt;color:#111;white-space:nowrap;}
+.comp-head-cell:not(:last-child){border-right:1.5px solid #bbb;}
+.comp-row{display:grid;grid-template-columns:82px 1fr 1fr;border-bottom:1.5px solid #ccc;}
+.comp-row:last-child{border-bottom:none;}
+.c-key{padding:5px 8px;font-weight:800;font-size:11pt;color:#111;background:#f2f2f2;display:flex;align-items:center;justify-content:center;text-align:center;white-space:nowrap;border-right:1.5px solid #ccc;}
+.c-ans{padding:0 8px;background:#fff;display:flex;align-items:center;justify-content:center;min-height:22px;font-size:11pt;line-height:1.25;font-weight:800;}
+.c-ans:not(:last-child){border-right:1.5px solid #ccc;}
+
+.char-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;flex:1;align-content:stretch;min-height:0;}
+.char-card{border-radius:6px;padding:13px 15px;border:2px solid #bbb;border-left:4px solid #777;display:flex;flex-direction:column;gap:6px;}
+.char-badge-sm{font-size:10.5pt;padding:2px 8px;border-radius:10px;font-weight:800;display:inline-block;align-self:flex-start;border:1.5px solid #aaa;color:#222;margin-bottom:1px;background:#f5f5f5;}
+.char-blank-name{font-family:'Nanum Myeongjo',serif;font-size:16pt;font-weight:800;display:inline-block;min-width:70px;border-bottom:2.5px solid #444;border-radius:3px;padding:1px 6px;color:#111;}
+.char-desc-sm{font-size:11pt;color:#111;line-height:1.5;font-weight:600;}
+.bogi-chips{display:flex;flex-wrap:wrap;gap:3px;margin-top:2px;}
+
+.story-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;flex-shrink:0;}
+.story-card{border-radius:6px;padding:12px 14px;border:2px solid #bbb;border-left:4px solid #777;display:flex;flex-direction:column;gap:5px;}
+.step-badge-sm{font-size:11pt;color:#444;font-weight:800;letter-spacing:.05em;}
+.scene-blank{font-family:'Nanum Myeongjo',serif;font-size:15pt;font-weight:800;display:inline-block;min-width:78px;border-bottom:2.5px solid #444;border-radius:3px;padding:1px 6px;color:#111;}
+.scene-body-sm{font-size:12pt;color:#111;line-height:1.5;font-weight:600;}
+
+.ord-table{width:100%;border-collapse:collapse;font-size:13pt;flex-shrink:0;}
+.ord-table th{background:#e8e8e8;color:#111;padding:12px 9px;font-weight:800;text-align:center;border:1.5px solid #aaa;font-size:13pt;}
+.ord-table td{padding:15px 14px;border:1.5px solid #bbb;vertical-align:middle;line-height:1.6;font-size:13pt;font-weight:600;}
+.ord-table tr:nth-child(even) td{background:#fafafa;}
+.ord-num-cell{width:96px;text-align:center;font-size:14pt;font-weight:800;color:#111;white-space:nowrap;}
+
+.number-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;flex-shrink:0;margin-bottom:6px;}
+.number-card{border-radius:6px;padding:11px 13px;border:2px solid #bbb;border-left:4px solid #777;display:flex;flex-direction:column;gap:5px;}
+.num-badge{font-size:11pt;color:#444;font-weight:800;letter-spacing:.08em;}
+.num-icon{font-size:17.5pt;}
+.num-title{font-family:'Nanum Myeongjo',serif;font-size:15.5pt;font-weight:800;color:#111;line-height:1.2;}
+.num-desc{font-size:12pt;color:#111;line-height:1.55;font-weight:600;}
+.num-q{font-size:12pt;color:#111;font-weight:800;margin-top:4px;}
+.write-lines{display:flex;flex-direction:column;gap:12px;margin-top:6px;}
+.wline{border-bottom:1.5px solid #aaa;height:22px;}
+
+.essay-box{border:2px solid #bbb;border-left:4px solid #777;border-radius:6px;padding:11px 16px;flex-shrink:0;margin-bottom:8px;}
+.essay-q-sm{font-size:14pt;font-weight:800;color:#111;line-height:1.65;margin-bottom:7px;}
+.essay-q-sm em{color:#111;font-style:normal;font-weight:800;}
+.write-block{border:1.5px solid #bbb;border-radius:5px;padding:6px 10px;}
+.wl{border-bottom:1.5px solid #bbb;height:26px;}
+
+.sketch-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;flex:1;min-height:0;}
+.sketch-box{border:2px solid #bbb;border-radius:6px;display:flex;flex-direction:column;overflow:hidden;background:#fff;}
+.sketch-label{background:#f2f2f2;border-bottom:1.5px solid #bbb;padding:7px 10px;font-weight:800;font-size:11.5pt;text-align:center;flex-shrink:0;color:#111;}
+.sketch-sub{font-size:9pt;color:#777;text-align:center;padding:3px 6px 0;flex-shrink:0;}
+.sketch-area{flex:1;}
+</style>
+</head>
+<body>
+
+<!-- ══════════ PAGE 1 ══════════ -->
+<div class="page">
+
+  <div class="p1-header">
+    <div>
+      <div class="p1-title">마술피리</div>
+      <div class="p1-sub">OPERA · THE MAGIC FLUTE · 활동지</div>
+    </div>
+    <div class="p1-info">
+      초연 <b>1791</b>년 &nbsp;·&nbsp; 작곡 <b>모차르트</b><br/>
+      오스트리아 <b>빈</b>에서 초연<br/>
+      작곡가 세상을 떠나기 두 달 전 초연
+    </div>
+  </div>
+
+  <div style="background:#c0392b;color:#fff;text-align:center;font-weight:800;font-size:10pt;letter-spacing:.15em;padding:3px;border-radius:5px;margin-bottom:4px;">정 답 지 · ANSWER KEY</div>
+<div class="stu-bar">
+    <div class="stu-cell">
+      <span class="stu-label">학&nbsp;&nbsp;&nbsp;번</span>
+      <div class="stu-line"></div>
+    </div>
+    <div class="stu-cell">
+      <span class="stu-label">이&nbsp;&nbsp;&nbsp;름</span>
+      <div class="stu-line"></div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="sec-title">① 오페라란 무엇인가요?</div>
+  <div class="def-box">
+    <strong>오페라(Opera)</strong>는 대본에 성악을 붙여
+    <span class="blank blank-lg"><span style="color:#c0392b;">대사 없이 노래</span></span>로
+    극을 전개하는 서양의 종합무대예술이다. 가수는 마이크 없이,
+    <span class="blank blank-md"><span style="color:#c0392b;">관현악단</span></span>은
+    무대 아래 피트에서 처음부터 끝까지 함께 연주한다.
+  </div>
+  <div class="sec-sub">
+    보기 :
+    <span class="chip">대사 없이 노래</span>
+    <span class="chip">관현악단</span>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="sec-title">오페라의 특징</div>
+  <div class="elem-grid" style="grid-template-columns:repeat(3,1fr);grid-template-rows:1fr 1fr;">
+    <div class="elem-card">
+      <div class="elem-name"><span class="blank"><span style="color:#c0392b;">마이크 없이</span></span></div>
+      <div class="elem-desc">자연 발성만으로 극장 전체에 소리 전달</div>
+    </div>
+    <div class="elem-card">
+      <div class="elem-name"><span class="blank blank-md"><span style="color:#c0392b;">오케스트라 반주</span></span></div>
+      <div class="elem-desc">처음부터 끝까지 생음악으로 함께 연주</div>
+    </div>
+    <div class="elem-card">
+      <div class="elem-name"><span class="blank blank-md"><span style="color:#c0392b;">벨칸토 창법</span></span></div>
+      <div class="elem-desc">'아름다운 소리'라는 뜻의 맑고 유려한 발성</div>
+    </div>
+    <div class="elem-card">
+      <div class="elem-name"><span class="blank blank-lg"><span style="color:#c0392b;">아리아·레치타티보</span></span></div>
+      <div class="elem-desc">노래하는 부분과 대사처럼 이어주는 부분의 교차</div>
+    </div>
+    <div class="elem-card">
+      <div class="elem-name"><span class="blank"><span style="color:#c0392b;">리브레토</span></span></div>
+      <div class="elem-desc">줄거리와 대사를 담은 오페라 대본</div>
+    </div>
+    <div class="elem-card">
+      <div class="elem-name"><span class="blank blank-lg"><span style="color:#c0392b;">웅장한 무대미술</span></span></div>
+      <div class="elem-desc">화려한 세트와 의상으로 이야기를 시각적으로 표현</div>
+    </div>
+  </div>
+  <div class="sec-sub">
+    보기 :
+    <span class="chip">마이크 없이</span>
+    <span class="chip">오케스트라 반주</span>
+    <span class="chip">벨칸토 창법</span>
+    <span class="chip">아리아·레치타티보</span>
+    <span class="chip">리브레토</span>
+    <span class="chip">웅장한 무대미술</span>
+  </div>
+
+  <div style="flex:1;display:flex;flex-direction:column;min-height:0;gap:6px;">
+  <div class="divider"></div>
+
+  <div class="sec-title">② 오페라와 뮤지컬의 차이점</div>
+  <div class="sec-sub">빈칸에 알맞은 말을 보기에서 골라 쓰세요.</div>
+  <div class="comp-wrap" style="flex:1;display:flex;flex-direction:column;min-height:0;">
+    <div class="comp-head" style="flex-shrink:0;">
+      <div class="comp-head-cell">비교 항목</div>
+      <div class="comp-head-cell">오페라</div>
+      <div class="comp-head-cell">뮤지컬</div>
+    </div>
+    <div class="comp-row" style="flex:1;">
+      <div class="c-key">발생 시기</div>
+      <div class="c-ans"><span style="color:#c0392b;">1597년경, 이탈리아</span></div>
+      <div class="c-ans"><span style="color:#c0392b;">1866년경, 미국</span></div>
+    </div>
+    <div class="comp-row" style="flex:1;">
+      <div class="c-key">노래 방식</div>
+      <div class="c-ans"><span style="color:#c0392b;">벨칸토 클래식 발성</span></div>
+      <div class="c-ans"><span style="color:#c0392b;">대중적인 발성</span></div>
+    </div>
+    <div class="comp-row" style="flex:1;">
+      <div class="c-key">마이크</div>
+      <div class="c-ans"><span style="color:#c0392b;">사용하지 않음</span></div>
+      <div class="c-ans"><span style="color:#c0392b;">사용함</span></div>
+    </div>
+    <div class="comp-row" style="flex:1;">
+      <div class="c-key">춤 비중</div>
+      <div class="c-ans"><span style="color:#c0392b;">비중이 적음</span></div>
+      <div class="c-ans"><span style="color:#c0392b;">안무 비중이 큼</span></div>
+    </div>
+    <div class="comp-row" style="flex:1;">
+      <div class="c-key">대표작</div>
+      <div class="c-ans"><span style="color:#c0392b;">마술피리</span></div>
+      <div class="c-ans"><span style="color:#c0392b;">오페라의 유령</span></div>
+    </div>
+  </div>
+  <div class="sec-sub">
+    보기 :
+    <span class="chip">1597년경, 이탈리아</span>
+    <span class="chip">1866년경, 미국</span>
+    <span class="chip">벨칸토 클래식 발성</span>
+    <span class="chip">대중적인 발성</span>
+    <span class="chip">사용하지 않음</span>
+    <span class="chip">사용함</span>
+    <span class="chip">비중이 적음</span>
+    <span class="chip">안무 비중이 큼</span>
+    <span class="chip">마술피리</span>
+    <span class="chip">오페라의 유령</span>
+  </div>
+  </div>
+
+  <div class="page-footer">
+    <span>오페라 「마술피리」 활동지</span>
+    <div style="display:flex;align-items:center;gap:5px;">
+      <span>① 개념 · 용어 · ② 비교</span>
+      <div class="page-num">1</div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════ PAGE 2 ══════════ -->
+<div class="page">
+
+  <div class="sec-title">③ 주요 인물</div>
+  <div class="sec-sub">빈칸을 보기에서 골라 쓰세요.</div>
+  <div class="char-grid">
+
+    <div class="char-card">
+      <span class="char-badge-sm">주인공 · 왕자</span>
+      <div><span class="char-blank-name"><span style="color:#c0392b;">타미노</span></span></div>
+      <div class="char-desc-sm">
+        뱀에게 쫓기다 밤의 여왕의 세 시녀에게 구출됨.<br/>
+        딸을 구해달라는 부탁과 함께
+        <span class="blank" style="min-width:60px;"><span style="color:#c0392b;">마술피리</span></span>를 받는다.
+      </div>
+      <div class="bogi-chips">
+        <span class="chip">타미노</span><span class="chip">파미나</span>
+        <span class="chip">파파게노</span><span class="chip">자라스트로</span>
+        <span class="chip">밤의 여왕</span><span class="chip">파파게나</span>
+        <span class="chip">마술피리</span>
+      </div>
+    </div>
+
+    <div class="char-card">
+      <span class="char-badge-sm">여주인공 · 공주</span>
+      <div><span class="char-blank-name"><span style="color:#c0392b;">파미나</span></span></div>
+      <div class="char-desc-sm">
+        밤의 여왕의 딸.<br/>
+        타미노와 함께 <strong>불과 물의 시련</strong>을<br/>
+        통과하며 사랑을 증명한다.
+      </div>
+      <div class="bogi-chips">
+        <span class="chip">파파게노</span><span class="chip">타미노</span>
+        <span class="chip">자라스트로</span><span class="chip">파미나</span>
+        <span class="chip">파파게나</span><span class="chip">밤의 여왕</span>
+      </div>
+    </div>
+
+    <div class="char-card">
+      <span class="char-badge-sm">코믹 캐릭터 · 새잡이</span>
+      <div><span class="char-blank-name"><span style="color:#c0392b;">파파게노</span></span></div>
+      <div class="char-desc-sm">
+        타미노와 함께 여행을 떠나는<br/>
+        유쾌한 인물.<br/>
+        마지막에 짝 <span class="blank" style="min-width:60px;"><span style="color:#c0392b;">파파게나</span></span>를 만난다.
+      </div>
+      <div class="bogi-chips">
+        <span class="chip">타미노</span><span class="chip">자라스트로</span>
+        <span class="chip">파파게노</span><span class="chip">파미나</span>
+        <span class="chip">밤의 여왕</span><span class="chip">파파게나</span>
+      </div>
+    </div>
+
+    <div class="char-card">
+      <span class="char-badge-sm">대사제 · 선한 지도자</span>
+      <div><span class="char-blank-name"><span style="color:#c0392b;">자라스트로</span></span></div>
+      <div class="char-desc-sm">
+        처음엔 악당처럼 보였지만<br/>
+        사실은 <strong>선한 지도자</strong>임이<br/>
+        밝혀지는 인물.
+      </div>
+      <div class="bogi-chips">
+        <span class="chip">파파게노</span><span class="chip">밤의 여왕</span>
+        <span class="chip">자라스트로</span><span class="chip">타미노</span>
+        <span class="chip">파미나</span><span class="chip">파파게나</span>
+      </div>
+    </div>
+
+    <div class="char-card">
+      <span class="char-badge-sm">파미나의 어머니</span>
+      <div><span class="char-blank-name"><span style="color:#c0392b;">밤의 여왕</span></span></div>
+      <div class="char-desc-sm">
+        딸 파미나를 구해달라며<br/>
+        타미노에게 <strong>마술피리</strong>를<br/>
+        건네주는 인물.
+      </div>
+      <div class="bogi-chips">
+        <span class="chip">파파게나</span><span class="chip">자라스트로</span>
+        <span class="chip">밤의 여왕</span><span class="chip">파파게노</span>
+        <span class="chip">타미노</span><span class="chip">파미나</span>
+      </div>
+    </div>
+
+    <div class="char-card">
+      <span class="char-badge-sm">파파게노의 짝</span>
+      <div><span class="char-blank-name"><span style="color:#c0392b;">파파게나</span></span></div>
+      <div class="char-desc-sm">
+        이야기의 마지막에<br/>
+        파파게노와 만나<br/>
+        <strong>행복한 결말</strong>을 이루는 인물.
+      </div>
+      <div class="bogi-chips">
+        <span class="chip">밤의 여왕</span><span class="chip">타미노</span>
+        <span class="chip">파파게나</span><span class="chip">파미나</span>
+        <span class="chip">자라스트로</span><span class="chip">파파게노</span>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="page-footer">
+    <span>오페라 「마술피리」 활동지</span>
+    <div style="display:flex;align-items:center;gap:5px;">
+      <span>③ 주요 인물</span>
+      <div class="page-num">2</div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════ PAGE 3 ══════════ -->
+<div class="page">
+
+  <div class="sec-title">④ 줄거리</div>
+  <div class="sec-sub">각 장면의 이름을 보기에서 골라 빈칸에 쓰세요.</div>
+  <div class="story-grid" style="margin-bottom:5px;">
+
+    <div class="story-card">
+      <div class="step-badge-sm">① 첫 번째 장면</div>
+      <div><span class="scene-blank"><span style="color:#c0392b;">마술피리를 받음</span></span></div>
+      <div class="scene-body-sm">
+        왕자 타미노가 뱀에게 쫓기다<br/>
+        밤의 여왕의 세 시녀에게 구출되고,<br/>
+        딸 파미나를 구해달라는 부탁과 함께
+        <span class="blank" style="min-width:64px;"><span style="color:#c0392b;">마술피리</span></span>를 받는다.
+      </div>
+    </div>
+
+    <div class="story-card">
+      <div class="step-badge-sm">② 두 번째 장면</div>
+      <div><span class="scene-blank"><span style="color:#c0392b;">파파게노와의 여행</span></span></div>
+      <div class="scene-body-sm">
+        <span class="blank" style="min-width:64px;"><span style="color:#c0392b;">파파게노</span></span>와 함께 떠난 여행에서<br/>
+        사실 자라스트로가
+        <strong>선한 지도자</strong>임을 깨닫는다.
+      </div>
+    </div>
+
+    <div class="story-card">
+      <div class="step-badge-sm">③ 세 번째 장면</div>
+      <div><span class="scene-blank"><span style="color:#c0392b;">시련의 통과와 사랑의 증명</span></span></div>
+      <div class="scene-body-sm">
+        타미노와 파미나는
+        <span class="blank" style="min-width:90px;"><span style="color:#c0392b;">불과 물의 시련</span></span>을<br/>
+        함께 통과하며 <strong>사랑을 증명</strong>한다.
+      </div>
+    </div>
+
+    <div class="story-card">
+      <div class="step-badge-sm">④ 마지막 장면</div>
+      <div><span class="scene-blank"><span style="color:#c0392b;">모두의 행복한 결말</span></span></div>
+      <div class="scene-body-sm">
+        파파게노도 짝 파파게나를 만나<br/>
+        모두가 <strong>행복한 결말</strong>을<br/>
+        맞이한다.
+      </div>
+    </div>
+
+  </div>
+  <div class="sec-sub">
+    보기 :
+    <span class="chip">시련의 통과와 사랑의 증명</span>
+    <span class="chip">마술피리를 받음</span>
+    <span class="chip">파파게노와의 여행</span>
+    <span class="chip">모두의 행복한 결말</span>
+    <span class="chip">마술피리</span>
+    <span class="chip">파파게노</span>
+    <span class="chip">불과 물의 시련</span>
+  </div>
+
+  <div style="flex:1;display:flex;flex-direction:column;min-height:0;gap:6px;justify-content:center;">
+  <div class="divider"></div>
+
+  <div class="sec-title">⑤ 작곡가 소개 — 모차르트</div>
+  <div class="sec-sub">빈칸에 알맞은 말을 보기에서 골라 쓰세요.</div>
+  <div class="def-box" style="text-align:justify;">
+    「마술피리」를 작곡한 사람은 <span class="blank blank-md"><span style="color:#c0392b;">모차르트</span></span>이며,
+    <span class="blank blank-lg"><span style="color:#c0392b;">잘츠부르크</span></span>에서 태어나 5세부터 작곡을 시작한 천재 음악가였다.
+    오페라·교향곡·협주곡 등 방대한 작품을 남겼으며, 「마술피리」는 그가 세상을 떠나기 두 달 전인 <span class="blank"><span style="color:#c0392b;">1791</span></span>년에 초연되었다.
+  </div>
+  <div class="sec-sub">
+    보기 :
+    <span class="chip">모차르트</span>
+    <span class="chip">잘츠부르크</span>
+    <span class="chip">1791</span>
+    <span class="chip">1756~1791</span>
+    <span class="chip">징슈필</span>
+  </div>
+  <div class="number-grid" style="grid-template-columns:repeat(3,1fr);margin-top:2px;">
+    <div class="number-card">
+      <div class="num-icon">📅</div>
+      <div class="num-title"><span class="blank blank-md"><span style="color:#c0392b;">1756~1791</span></span></div>
+      <div class="num-desc">태어나고 세상을 떠난 해</div>
+    </div>
+    <div class="number-card">
+      <div class="num-icon">📍</div>
+      <div class="num-title"><span class="blank blank-md"><span style="color:#c0392b;">잘츠부르크</span></span></div>
+      <div class="num-desc">태어난 도시</div>
+    </div>
+    <div class="number-card">
+      <div class="num-icon">🎼</div>
+      <div class="num-title"><span class="blank blank-md"><span style="color:#c0392b;">징슈필</span></span></div>
+      <div class="num-desc">「마술피리」의 음악 형식</div>
+    </div>
+  </div>
+  </div>
+
+  <div class="page-footer">
+    <span>오페라 「마술피리」 활동지</span>
+    <div style="display:flex;align-items:center;gap:5px;">
+      <span>④ 줄거리 · ⑤ 작곡가 소개</span>
+      <div class="page-num">3</div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════ PAGE 4 ══════════ -->
+<div class="page">
+
+  <div class="sec-title">⑥ 감상 포인트</div>
+  <div class="sec-sub">영상을 감상하고 느낀 점을 써 보세요.</div>
+  <div class="number-grid">
+
+    <div class="number-card">
+      <div class="num-badge">POINT ①</div>
+      <div class="num-title"><span class="blank blank-md"><span style="color:#c0392b;">밤의 여왕 아리아</span></span></div>
+      <div class="num-desc">
+        인간이 낼 수 있는 가장 높은<br/>
+        음역대 중 하나인
+        <strong>초고음 콜로라투라 창법</strong>
+      </div>
+    </div>
+
+    <div class="number-card">
+      <div class="num-badge">POINT ②</div>
+      <div class="num-title"><span class="blank blank-lg"><span style="color:#c0392b;">파파게노의 유쾌함</span></span></div>
+      <div class="num-desc">
+        진지한 이야기 속<br/>
+        웃음을 주는
+        <strong>감초 캐릭터</strong>
+      </div>
+    </div>
+
+    <div class="number-card">
+      <div class="num-badge">POINT ③</div>
+      <div class="num-title"><span class="blank blank-md"><span style="color:#c0392b;">징슈필</span></span> 형식</div>
+      <div class="num-desc">
+        노래와 대사가 오가는 구성이라<br/>
+        <strong>처음 접해도 이해하기 쉬움</strong>
+      </div>
+    </div>
+
+  </div>
+  <div class="sec-sub" style="margin-bottom:6px;">
+    보기 : <span class="chip">밤의 여왕 아리아</span> <span class="chip">파파게노의 유쾌함</span> <span class="chip">징슈필</span>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="sec-title">⑦ 감상문(느낀점) 작성하기</div>
+  <div class="sec-sub">오늘 감상한 작품에 대해 느낀 점을 자유롭게 써 보세요.</div>
+
+  <div class="essay-box">
+    <div class="write-block">
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        <div class="wl"></div>
+        <div class="wl"></div>
+        <div class="wl"></div>
+        <div class="wl"></div>
+        <div class="wl"></div>
+        <div class="wl"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sketch-grid">
+    <div class="sketch-box">
+      <div class="sketch-label">미니북 표지 꾸미기</div>
+      <div class="sketch-sub">미니북 표지를 어떻게 꾸밀지 미리 그려 보세요</div>
+      <div class="sketch-area"></div>
+    </div>
+    <div class="sketch-box">
+      <div class="sketch-label">인상 깊은 장면 그리기</div>
+      <div class="sketch-sub">미니북에 그릴 인상 깊은 장면을 미리 그려 보세요</div>
+      <div class="sketch-area"></div>
+    </div>
+  </div>
+
+
+  <div class="page-footer">
+    <span>오페라 「마술피리」 활동지</span>
+    <div style="display:flex;align-items:center;gap:5px;">
+      <span>⑥ 감상 포인트 · ⑦ 감상문(느낀점)</span>
+      <div class="page-num">4</div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
